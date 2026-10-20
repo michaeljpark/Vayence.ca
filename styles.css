@@ -365,25 +365,6 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
 .hero-video__mark { width: 28px; height: 28px; }
 
 .pov-video { border-radius: 24px; }
-.sound-toggle {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px 10px 12px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .9);
-  color: var(--ink);
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: background-color .2s ease;
-}
-.sound-toggle:hover { background: var(--bg); }
-.sound-toggle:focus-visible { outline: 2px solid var(--brand-ink); outline-offset: 2px; }
-.sound-toggle[aria-pressed="false"] img { opacity: .55; }
 
 /* ---------- The problem ---------- */
 .trigger {
@@ -769,9 +750,7 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
   .hero-video__award { left: 20px; bottom: 20px; width: 34%; }
   .hero-video__brand { top: 16px; right: 16px; gap: 7px; font-size: 14px; }
   .hero-video__mark { width: 18px; height: 18px; }
-  .pov-video { border-radius: 18px; }
-  .sound-toggle { right: 12px; bottom: 12px; padding: 8px 12px 8px 10px; }
-  .hero__copy { padding: 28px 24px; border-radius: 24px; gap: 40px; }
+  .pov-video { border-radius: 18px; }  .hero__copy { padding: 28px 24px; border-radius: 24px; gap: 40px; }
   .hero__visual { min-height: 520px; padding: 12px; border-radius: 24px; }
   .caption { padding: 14px 16px; border-radius: 16px; }
   .year { font-size: 24px; padding: 10px 16px; }
