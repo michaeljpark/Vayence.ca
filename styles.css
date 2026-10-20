@@ -303,6 +303,79 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
 }
 .caption__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 
+/* ---------- Videos ---------- */
+.hero-video,
+.pov-video {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: var(--ink);
+  isolation: isolate;
+}
+.video__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-video {
+  border-radius: 32px;
+  /* fill the first screen below the header without exceeding 16:9 */
+  max-height: calc(100vh - 113px);
+  max-height: calc(100svh - 113px);
+  width: 100%;
+}
+/* darken the bright studio wall so the white marks stay legible */
+.hero-video::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(31, 27, 28, .55) 0%, rgba(31, 27, 28, .2) 45%, rgba(31, 27, 28, 0) 70%),
+    linear-gradient(180deg, rgba(31, 27, 28, .25) 0%, rgba(31, 27, 28, 0) 30%);
+  pointer-events: none;
+}
+.hero-video__award,
+.hero-video__mark {
+  position: absolute;
+  z-index: 1;
+  height: auto;
+  filter: drop-shadow(0 2px 16px rgba(0, 0, 0, .25));
+}
+.hero-video__award {
+  left: 56px;
+  bottom: 56px;
+  width: clamp(120px, 20vw, 300px);
+}
+.hero-video__mark {
+  top: 40px;
+  right: 40px;
+  width: clamp(36px, 4.2vw, 60px);
+}
+
+.pov-video { border-radius: 24px; }
+.sound-toggle {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 10px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .9);
+  color: var(--ink);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background-color .2s ease;
+}
+.sound-toggle:hover { background: var(--bg); }
+.sound-toggle:focus-visible { outline: 2px solid var(--brand-ink); outline-offset: 2px; }
+.sound-toggle[aria-pressed="false"] img { opacity: .55; }
+
 /* ---------- The problem ---------- */
 .trigger {
   display: flex;
@@ -683,6 +756,11 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
   .quote__text { font-size: 20px; }
 
   .section { gap: 40px; border-radius: 24px; }
+  .hero-video { border-radius: 24px; }
+  .hero-video__award { left: 20px; bottom: 20px; width: 34%; }
+  .hero-video__mark { top: 18px; right: 18px; width: 32px; }
+  .pov-video { border-radius: 18px; }
+  .sound-toggle { right: 12px; bottom: 12px; padding: 8px 12px 8px 10px; }
   .hero__copy { padding: 28px 24px; border-radius: 24px; gap: 40px; }
   .hero__visual { min-height: 520px; padding: 12px; border-radius: 24px; }
   .caption { padding: 14px 16px; border-radius: 16px; }

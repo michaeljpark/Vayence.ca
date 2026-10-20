@@ -56,6 +56,44 @@
     });
   }
 
+  // Background videos: honour reduced motion, pause while off screen
+  var videos = Array.prototype.slice.call(document.querySelectorAll('.video__media'));
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  videos.forEach(function (v) {
+    if (reduceMotion) { v.removeAttribute('autoplay'); v.pause(); }
+  });
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    var videoObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var v = entry.target;
+        if (entry.isIntersecting) {
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        } else {
+          v.pause();
+        }
+      });
+    }, { threshold: 0.15 });
+    videos.forEach(function (v) { videoObserver.observe(v); });
+  }
+
+  // POV video sound toggle
+  var soundToggle = document.querySelector('.sound-toggle');
+  if (soundToggle) {
+    var povVideo = soundToggle.parentNode.querySelector('video');
+    soundToggle.addEventListener('click', function () {
+      var on = povVideo.muted;
+      povVideo.muted = !on;
+      if (on) {
+        var p = povVideo.play();
+        if (p && p.catch) p.catch(function () {});
+      }
+      soundToggle.setAttribute('aria-pressed', String(on));
+      soundToggle.setAttribute('aria-label', on ? 'Turn sound off' : 'Turn sound on');
+      soundToggle.querySelector('span').textContent = on ? 'Sound on' : 'Sound off';
+    });
+  }
+
   function isEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
