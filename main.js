@@ -6,19 +6,7 @@
   var ICONS = {
     'chevron-down': '<path d="m6 9 6 6 6-6"/>',
     'arrow-right': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
-    'arrow-left': '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
-    package: '<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/>',
-    workflow: '<rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/>',
-    'pen-tool': '<path d="M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l5.586-5.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z"/><path d="m18 13-1.375-6.874a1 1 0 0 0-.746-.776L3.235 2.028a1 1 0 0 0-1.207 1.207L5.35 15.879a1 1 0 0 0 .776.746L13 18"/><path d="m2.3 2.3 7.286 7.286"/><circle cx="11" cy="11" r="2"/>',
-    'calendar-clock': '<path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/>',
-    newspaper: '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>',
-    award: '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>',
-    megaphone: '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
-    'mail-plus': '<path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="M19 16v6"/><path d="M16 19h6"/>',
-    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
-    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-    handshake: '<path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/>',
-    mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>'
+    'arrow-left': '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>'
   };
   function icon(name, cls) {
     return '<svg class="i' + (cls ? ' ' + cls : '') + '" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
@@ -35,30 +23,27 @@
       id: 'product', label: 'Product', href: 'product.html',
       blurb: 'ProActive, a self-inflating vest that responds when stress rises.',
       items: [
-        ['package', 'Overview', 'What ProActive is and who it’s for', 'product.html#overview'],
-        ['workflow', 'How it works', 'Monitor, relief and tracking', 'product.html#how'],
-        ['pen-tool', 'Design', 'Four decisions behind the vest', 'product.html#design'],
-        ['calendar-clock', 'Availability', 'Development status', 'product.html#availability']
+        ['Overview', 'What ProActive is and who it’s for', 'product.html#overview'],
+        ['How it works', 'Monitor, relief and tracking', 'product.html#how'],
+        ['Design', 'Four decisions behind the vest', 'product.html#design']
       ]
     },
     {
       id: 'releases', label: 'Releases', href: 'releases.html',
       blurb: 'News, awards and updates from Vayence Inc.',
       items: [
-        ['newspaper', 'All releases', 'Every update in one place', 'releases.html'],
-        ['award', 'Awards', 'Recognition for ProActive', 'releases.html?category=Awards'],
-        ['megaphone', 'Updates', 'Product and company news', 'releases.html?category=Updates'],
-        ['mail-plus', 'Subscribe', 'Get new releases by email', 'releases.html#subscribe']
+        ['All releases', 'Every update in one place', 'releases.html'],
+        ['Awards', 'Recognition for ProActive', 'releases.html?category=Awards'],
+        ['Updates', 'Product and company news', 'releases.html?category=Updates']
       ]
     },
     {
       id: 'about', label: 'About us', href: 'about.html',
       blurb: 'A Canadian health-technology company founded by two industrial designers.',
       items: [
-        ['target', 'Mission', 'Why Vayence Inc exists', 'about.html#mission'],
-        ['users', 'Team', 'The founders behind ProActive', 'about.html#team'],
-        ['handshake', 'Partners', 'Organizations we work with', 'about.html#partners'],
-        ['mail', 'Contact', 'Get in touch with the team', 'about.html#contact']
+        ['Mission', 'Why Vayence Inc exists', 'about.html#mission'],
+        ['Team', 'The founders behind ProActive', 'about.html#team'],
+        ['Contact', 'Get in touch with the team', 'about.html#contact']
       ]
     }
   ];
@@ -86,10 +71,9 @@
               '</div>' +
               '<ul class="nav__links">' +
                 g.items.map(function (it) {
-                  return '<li><a class="nav__link" href="' + it[3] + '">' +
-                    '<span class="nav__icon">' + icon(it[0]) + '</span>' +
-                    '<span class="nav__text"><span class="nav__link-title">' + esc(it[1]) + '</span>' +
-                    '<span class="nav__link-desc">' + esc(it[2]) + '</span></span></a></li>';
+                  return '<li><a class="nav__link" href="' + it[2] + '">' +
+                    '<span class="nav__link-title">' + esc(it[0]) + '</span>' +
+                    '<span class="nav__link-desc">' + esc(it[1]) + '</span></a></li>';
                 }).join('') +
               '</ul>' +
             '</div>' +
@@ -121,7 +105,7 @@
         '<div class="footer__cols">' +
           NAV.map(function (g) {
             return '<div class="footer__col"><a class="label muted" href="' + g.href + '">' + esc(g.label) + '</a>' +
-              g.items.map(function (it) { return '<a class="body" href="' + it[3] + '">' + esc(it[1]) + '</a>'; }).join('') +
+              g.items.map(function (it) { return '<a class="body" href="' + it[2] + '">' + esc(it[0]) + '</a>'; }).join('') +
               '</div>';
           }).join('') +
           '<div class="footer__col"><p class="label muted">Contact</p>' +
