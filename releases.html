@@ -26,11 +26,22 @@
           <h1 class="intro__title">Releases</h1>
           <div class="intro__lead">
             <p class="statement statement--lg">News, awards and updates <span class="muted">from Vayence Inc and the ProActive project.</span></p>
-            <div class="filters" role="group" aria-label="Filter releases"><button class="filter" type="button" data-filter="" aria-pressed="false">All</button><button class="filter" type="button" data-filter="Awards" aria-pressed="false">Awards</button><button class="filter" type="button" data-filter="Updates" aria-pressed="false">Updates</button></div>
           </div>
         </div>
-        <div class="posts posts--grid"></div>
-        <article class="post-view" hidden></article>
+        <div class="releases__body" id="list">
+          <nav class="releases__nav" aria-label="Release categories" data-releases-head>
+            <p class="eyebrow">Categories</p>
+            <ul class="filters">
+              <li><button class="filter" type="button" data-filter="" aria-pressed="false">All releases<span class="filter__count"></span></button></li>
+              <li><button class="filter" type="button" data-filter="Awards" aria-pressed="false">Awards<span class="filter__count"></span></button></li>
+              <li><button class="filter" type="button" data-filter="Updates" aria-pressed="false">Updates<span class="filter__count"></span></button></li>
+            </ul>
+          </nav>
+          <div class="releases__main">
+            <div class="post-list"></div>
+            <article class="post-view" hidden></article>
+          </div>
+        </div>
       </section>
 
       <!-- Subscribe -->

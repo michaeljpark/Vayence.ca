@@ -32,9 +32,9 @@
       id: 'releases', label: 'Releases', href: 'releases.html',
       blurb: 'News, awards and updates from Vayence Inc.',
       items: [
-        ['All releases', 'Every update in one place', 'releases.html'],
-        ['Awards', 'Recognition for ProActive', 'releases.html?category=Awards'],
-        ['Updates', 'Product and company news', 'releases.html?category=Updates']
+        ['All releases', 'Every update in one place', 'releases.html#list'],
+        ['Awards', 'Recognition for ProActive', 'releases.html?category=Awards#list'],
+        ['Updates', 'Product and company news', 'releases.html?category=Updates#list']
       ]
     },
     {
@@ -204,17 +204,31 @@
     el.innerHTML = POSTS.slice(0, limit).map(postCard).join('');
   });
 
+  // one row per release: meta | title + excerpt | thumbnail
+  function postRow(p) {
+    return '<a class="post-row" href="releases.html?post=' + encodeURIComponent(p.slug) + '">' +
+      '<p class="post-row__meta"><span class="tag">' + esc(p.category) + '</span><span>' + esc(p.year) + '</span></p>' +
+      '<div class="post-row__text"><h2 class="post-row__title">' + esc(p.title) + '</h2>' +
+        '<p class="post-row__excerpt">' + esc(p.excerpt) + '</p></div>' +
+      '<figure class="post-row__media"><img src="' + p.image + '" alt="" loading="lazy"></figure>' +
+      '</a>';
+  }
+
   var releases = document.querySelector('[data-releases]');
   if (releases) {
     var params = new URLSearchParams(window.location.search);
-    var list = releases.querySelector('.posts');
+    var list = releases.querySelector('.post-list');
     var view = releases.querySelector('.post-view');
     var filters = Array.prototype.slice.call(document.querySelectorAll('[data-filter]'));
-    var listing = document.querySelector('[data-releases-head]');
+    var heads = Array.prototype.slice.call(document.querySelectorAll('[data-releases-head]'));
 
+    filters.forEach(function (b) {
+      var c = b.getAttribute('data-filter');
+      b.querySelector('.filter__count').textContent = POSTS.filter(function (p) { return !c || p.category === c; }).length;
+    });
     var renderList = function (category) {
       var items = POSTS.filter(function (p) { return !category || p.category === category; });
-      list.innerHTML = items.length ? items.map(postCard).join('') : '<p class="lead">No releases in this category yet.</p>';
+      list.innerHTML = items.length ? items.map(postRow).join('') : '<p class="lead">No releases in this category yet.</p>';
       filters.forEach(function (b) {
         b.setAttribute('aria-pressed', String((b.getAttribute('data-filter') || '') === (category || '')));
       });
@@ -223,8 +237,7 @@
       b.addEventListener('click', function () {
         var c = b.getAttribute('data-filter');
         renderList(c);
-        var url = c ? '?category=' + encodeURIComponent(c) : window.location.pathname;
-        window.history.replaceState(null, '', url);
+        window.history.replaceState(null, '', (c ? '?category=' + encodeURIComponent(c) : window.location.pathname) + '#list');
       });
     });
 
@@ -232,12 +245,13 @@
     var post = slug && POSTS.filter(function (p) { return p.slug === slug; })[0];
     if (post) {
       document.title = post.title + ' — Vayence Inc';
-      if (listing) listing.hidden = true;
+      heads.forEach(function (h) { h.hidden = true; });
+      releases.classList.add('is-post');
       list.hidden = true;
       view.hidden = false;
       var others = POSTS.filter(function (p) { return p !== post; }).slice(0, 3);
       view.innerHTML =
-        '<a class="post-view__back" href="releases.html">' + icon('arrow-left') + 'All releases</a>' +
+        '<a class="post-view__back" href="releases.html#list">' + icon('arrow-left') + 'All releases</a>' +
         '<header class="post-view__head">' +
           '<p class="post-card__meta"><span class="tag">' + esc(post.category) + '</span><span>' + esc(post.year) + '</span></p>' +
           '<h1 class="post-view__title">' + esc(post.title) + '</h1>' +
@@ -249,9 +263,13 @@
           (post.quote ? '<figure class="quote"><blockquote class="quote__text">' + esc(post.quote.text) + '</blockquote>' +
             '<figcaption class="small quote__cite">' + esc(post.quote.cite) + '</figcaption></figure>' : '') +
         '</div>' +
-        (others.length ? '<div class="post-view__more"><h2 class="h3">More releases</h2><div class="posts">' + others.map(postCard).join('') + '</div></div>' : '');
+        (others.length ? '<div class="post-view__more"><h2 class="h3">More releases</h2><div class="post-list">' + others.map(postRow).join('') + '</div></div>' : '');
     } else {
       renderList(params.get('category'));
+      // the list is rendered after the browser's own jump to #list, so settle there again
+      if (window.location.hash === '#list') {
+        window.requestAnimationFrame(function () { document.getElementById('list').scrollIntoView(); });
+      }
     }
   }
 
