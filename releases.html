@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Releases — Vayence Inc</title>
+  <meta name="description" content="News, awards and updates from Vayence Inc and the ProActive project.">
+  <meta property="og:title" content="Releases — Vayence Inc">
+  <meta property="og:description" content="News, awards and updates from Vayence Inc and the ProActive project.">
+  <meta property="og:image" content="assets/img/hero-visual.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="releases">
+  <div class="page">
+
+    <!-- Header and footer are rendered by main.js from one site map -->
+    <header class="header" id="top" data-site-header></header>
+
+    <main class="subpage">
+      <!-- Releases: list, or a single post when ?post=<slug> -->
+      <section class="section section--white releases" data-releases>
+        <div class="intro__head" data-releases-head>
+          <h1 class="intro__title">Releases</h1>
+          <div class="intro__lead">
+            <p class="statement statement--lg">News, awards and updates <span class="muted">from Vayence Inc and the ProActive project.</span></p>
+            <div class="filters" role="group" aria-label="Filter releases"><button class="filter" type="button" data-filter="" aria-pressed="false">All</button><button class="filter" type="button" data-filter="Awards" aria-pressed="false">Awards</button><button class="filter" type="button" data-filter="Updates" aria-pressed="false">Updates</button></div>
+          </div>
+        </div>
+        <div class="posts posts--grid"></div>
+        <article class="post-view" hidden></article>
+      </section>
+
+      <!-- Subscribe -->
+      <section class="section section--white subscribe" id="subscribe">
+        <div class="split">
+          <p class="eyebrow"><svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /><path d="M19 16v6" /><path d="M16 19h6" /></svg>Subscribe</p>
+          <div class="split__body">
+            <h2 class="statement statement--lg">Get new releases by email. <span class="muted">We’ll share awards, product updates and news as ProActive develops.</span></h2>
+            <div class="subscribe__form">
+              <form class="newsletter__form" data-newsletter novalidate>
+                <input type="email" name="email" placeholder="Email address" aria-label="Email address" autocomplete="email" required>
+                <button class="btn btn--primary btn--s" type="submit">Subscribe</button>
+              </form>
+              <p class="small form__status" role="status" aria-live="polite"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" data-site-footer></footer>
+
+  </div>
+  <script src="assets/data/posts.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

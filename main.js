@@ -1,71 +1,288 @@
 (function () {
   var CONTACT_EMAIL = 'theproactiveproject@gmail.com';
+  var page = document.body.getAttribute('data-page') || 'home';
 
-  var header = document.querySelector('.header');
-  var toggle = document.querySelector('.menu-toggle');
-  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav__item'));
-
-  // Mobile menu
-  function setMenu(open) {
-    header.classList.toggle('is-open', open);
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  // ---------- Icons (Lucide, inlined so they take currentColor) ----------
+  var ICONS = {
+    'chevron-down': '<path d="m6 9 6 6 6-6"/>',
+    'arrow-right': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+    'arrow-left': '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+    package: '<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/>',
+    workflow: '<rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/>',
+    'pen-tool': '<path d="M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l5.586-5.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z"/><path d="m18 13-1.375-6.874a1 1 0 0 0-.746-.776L3.235 2.028a1 1 0 0 0-1.207 1.207L5.35 15.879a1 1 0 0 0 .776.746L13 18"/><path d="m2.3 2.3 7.286 7.286"/><circle cx="11" cy="11" r="2"/>',
+    'calendar-clock': '<path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/>',
+    newspaper: '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>',
+    award: '<path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/>',
+    megaphone: '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+    'mail-plus': '<path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/><path d="M19 16v6"/><path d="M16 19h6"/>',
+    target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    handshake: '<path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/>',
+    mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>'
+  };
+  function icon(name, cls) {
+    return '<svg class="i' + (cls ? ' ' + cls : '') + '" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
   }
-  toggle.addEventListener('click', function () {
-    setMenu(!header.classList.contains('is-open'));
-  });
-  header.addEventListener('click', function (e) {
-    if (e.target.closest('a')) setMenu(false);
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') setMenu(false);
-  });
-  document.addEventListener('click', function (e) {
-    if (!header.contains(e.target)) setMenu(false);
-  });
-  window.matchMedia('(min-width: 1101px)').addEventListener('change', function (e) {
-    if (e.matches) setMenu(false);
-  });
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
 
-  // Header goes from clear glass (over the hero video) to a solid white bar:
-  // --p runs 0 → 1 over the first ~60% of the video's height
-  var heroVideo = document.querySelector('.hero-video');
-  var ticking = false;
-  function updateHeader() {
-    ticking = false;
-    var p = 1;
-    if (heroVideo) {
-      var range = Math.max(heroVideo.offsetHeight * 0.6, 1);
-      p = Math.min(Math.max(window.scrollY / range, 0), 1);
+  // ---------- Site map: one source for the header menus and the footer ----------
+  var NAV = [
+    {
+      id: 'product', label: 'Product', href: 'product.html',
+      blurb: 'ProActive, a self-inflating vest that responds when stress rises.',
+      items: [
+        ['package', 'Overview', 'What ProActive is and who it’s for', 'product.html#overview'],
+        ['workflow', 'How it works', 'Monitor, relief and tracking', 'product.html#how'],
+        ['pen-tool', 'Design', 'Four decisions behind the vest', 'product.html#design'],
+        ['calendar-clock', 'Availability', 'Development status', 'product.html#availability']
+      ]
+    },
+    {
+      id: 'releases', label: 'Releases', href: 'releases.html',
+      blurb: 'News, awards and updates from Vayence Inc.',
+      items: [
+        ['newspaper', 'All releases', 'Every update in one place', 'releases.html'],
+        ['award', 'Awards', 'Recognition for ProActive', 'releases.html?category=Awards'],
+        ['megaphone', 'Updates', 'Product and company news', 'releases.html?category=Updates'],
+        ['mail-plus', 'Subscribe', 'Get new releases by email', 'releases.html#subscribe']
+      ]
+    },
+    {
+      id: 'about', label: 'About us', href: 'about.html',
+      blurb: 'A Canadian health-technology company founded by two industrial designers.',
+      items: [
+        ['target', 'Mission', 'Why Vayence Inc exists', 'about.html#mission'],
+        ['users', 'Team', 'The founders behind ProActive', 'about.html#team'],
+        ['handshake', 'Partners', 'Organizations we work with', 'about.html#partners'],
+        ['mail', 'Contact', 'Get in touch with the team', 'about.html#contact']
+      ]
     }
-    // foreground eases in over the middle of the range (smoothstep .25 → .6)
-    var q = Math.min(Math.max((p - 0.25) / 0.35, 0), 1);
-    q = q * q * (3 - 2 * q);
-    header.style.setProperty('--p', p.toFixed(3));
-    header.style.setProperty('--q', q.toFixed(3));
-  }
-  function requestUpdate() {
-    if (!ticking) { ticking = true; window.requestAnimationFrame(updateHeader); }
-  }
-  window.addEventListener('scroll', requestUpdate, { passive: true });
-  window.addEventListener('resize', requestUpdate);
-  updateHeader();
+  ];
+  var contactHref = document.getElementById('contact') ? '#contact' : 'about.html#contact';
 
-  if ('IntersectionObserver' in window) {
-    // Highlight the nav item for the section in view
-    var byId = {};
-    navLinks.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
-    var sectionObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        navLinks.forEach(function (a) { a.classList.remove('is-active'); });
-        var link = byId[entry.target.id];
-        if (link) link.classList.add('is-active');
+  // ---------- Header ----------
+  var header = document.querySelector('[data-site-header]');
+  if (header) {
+    header.innerHTML =
+      '<a class="logo" href="index.html" aria-label="Vayence Inc home">' +
+        '<img src="assets/logos/vayence-header.svg" width="158.92" height="30.16" alt="Vayence Inc">' +
+      '</a>' +
+      '<nav class="nav" id="nav" aria-label="Primary">' +
+        NAV.map(function (g) {
+          return '<div class="nav__group" data-group="' + g.id + '">' +
+            '<button class="nav__item" type="button" aria-expanded="false" aria-controls="menu-' + g.id + '"' +
+              (page === g.id ? ' aria-current="page"' : '') + '>' +
+              '<span class="nav__label">' + esc(g.label) + '</span>' + icon('chevron-down', 'nav__chevron') +
+            '</button>' +
+            '<div class="nav__panel" id="menu-' + g.id + '">' +
+              '<div class="nav__intro">' +
+                '<p class="nav__kicker">' + esc(g.label) + '</p>' +
+                '<p class="nav__blurb">' + esc(g.blurb) + '</p>' +
+                '<a class="nav__all" href="' + g.href + '">Go to ' + esc(g.label) + icon('arrow-right') + '</a>' +
+              '</div>' +
+              '<ul class="nav__links">' +
+                g.items.map(function (it) {
+                  return '<li><a class="nav__link" href="' + it[3] + '">' +
+                    '<span class="nav__icon">' + icon(it[0]) + '</span>' +
+                    '<span class="nav__text"><span class="nav__link-title">' + esc(it[1]) + '</span>' +
+                    '<span class="nav__link-desc">' + esc(it[2]) + '</span></span></a></li>';
+                }).join('') +
+              '</ul>' +
+            '</div>' +
+          '</div>';
+        }).join('') +
+      '</nav>' +
+      '<div class="header__actions">' +
+        '<a class="btn btn--primary btn--s header__cta" href="' + contactHref + '">Contact us' +
+          '<img src="assets/icons/arrow-white-sm.svg" width="14" height="14" alt=""></a>' +
+        '<button class="menu-toggle" type="button" aria-controls="nav" aria-expanded="false" aria-label="Open menu">' +
+          '<span></span><span></span><span></span></button>' +
+      '</div>';
+  }
+
+  // ---------- Footer ----------
+  var footer = document.querySelector('[data-site-footer]');
+  if (footer) {
+    footer.innerHTML =
+      '<div class="footer__top">' +
+        '<div class="newsletter">' +
+          '<img src="assets/logos/vayence-footer.svg" width="169.88" height="32.24" alt="Vayence Inc">' +
+          '<p class="title">Get updates on ProActive</p>' +
+          '<form class="newsletter__form" data-newsletter novalidate>' +
+            '<input type="email" name="email" placeholder="Email address" aria-label="Email address" autocomplete="email" required>' +
+            '<button class="btn btn--primary btn--s" type="submit">Subscribe</button>' +
+          '</form>' +
+          '<p class="small form__status" role="status" aria-live="polite"></p>' +
+        '</div>' +
+        '<div class="footer__cols">' +
+          NAV.map(function (g) {
+            return '<div class="footer__col"><a class="label muted" href="' + g.href + '">' + esc(g.label) + '</a>' +
+              g.items.map(function (it) { return '<a class="body" href="' + it[3] + '">' + esc(it[1]) + '</a>'; }).join('') +
+              '</div>';
+          }).join('') +
+          '<div class="footer__col"><p class="label muted">Contact</p>' +
+            '<a class="body" href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a>' +
+            '<a class="body" href="https://www.linkedin.com/search/results/companies/?keywords=Vayence%20Inc" target="_blank" rel="noopener">LinkedIn</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="footer__bottom small muted">' +
+        '<p class="footer__disclaimer">ProActive is in development and is not available for sale. It is not intended to diagnose, treat, cure or prevent any medical condition.</p>' +
+        '<p>© 2026 Vayence Inc. All rights reserved.</p>' +
+      '</div>';
+  }
+
+  // ---------- Menus: desktop dropdown panels, mobile drawer + accordions ----------
+  if (header) {
+    var toggle = header.querySelector('.menu-toggle');
+    var groups = Array.prototype.slice.call(header.querySelectorAll('.nav__group'));
+
+    var setGroup = function (group, open) {
+      group.classList.toggle('is-open', open);
+      group.querySelector('.nav__item').setAttribute('aria-expanded', String(open));
+    };
+    var closeGroups = function (except) {
+      groups.forEach(function (g) { if (g !== except) setGroup(g, false); });
+    };
+    var syncPanelState = function () {
+      header.classList.toggle('has-panel', groups.some(function (g) { return g.classList.contains('is-open'); }));
+    };
+    var setMenu = function (open) {
+      header.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      if (!open) { closeGroups(); syncPanelState(); }
+    };
+
+    groups.forEach(function (g) {
+      g.querySelector('.nav__item').addEventListener('click', function () {
+        var open = !g.classList.contains('is-open');
+        closeGroups(g);
+        setGroup(g, open);
+        syncPanelState();
       });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    document.querySelectorAll('main section[id]').forEach(function (s) { sectionObserver.observe(s); });
+    });
+    toggle.addEventListener('click', function () { setMenu(!header.classList.contains('is-open')); });
+    header.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setMenu(false);
+    });
+    document.addEventListener('click', function (e) {
+      if (!header.contains(e.target)) setMenu(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setMenu(false);
+    });
+    window.matchMedia('(min-width: 1101px)').addEventListener('change', function () { setMenu(false); });
 
-    // Fade sections in as they enter the viewport
+    // Header goes from clear glass (over the hero video) to a solid white bar:
+    // --p runs 0 → 1 over the first ~60% of the video's height
+    var heroVideo = document.querySelector('.hero-video');
+    var ticking = false;
+    var updateHeader = function () {
+      ticking = false;
+      var p = 1;
+      if (heroVideo) {
+        var range = Math.max(heroVideo.offsetHeight * 0.6, 1);
+        p = Math.min(Math.max(window.scrollY / range, 0), 1);
+      }
+      // foreground eases in over the middle of the range (smoothstep .25 → .6)
+      var q = Math.min(Math.max((p - 0.25) / 0.35, 0), 1);
+      q = q * q * (3 - 2 * q);
+      header.style.setProperty('--p', p.toFixed(3));
+      header.style.setProperty('--q', q.toFixed(3));
+    };
+    var requestUpdate = function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(updateHeader); }
+    };
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    updateHeader();
+  }
+
+  // ---------- Releases ----------
+  var POSTS = window.VAYENCE_POSTS || [];
+  function postCard(p) {
+    return '<a class="post-card" href="releases.html?post=' + encodeURIComponent(p.slug) + '">' +
+      '<figure class="post-card__media"><img src="' + p.image + '" alt="' + esc(p.imageAlt || '') + '" loading="lazy"></figure>' +
+      '<div class="post-card__body">' +
+        '<p class="post-card__meta"><span class="tag">' + esc(p.category) + '</span><span>' + esc(p.year) + '</span></p>' +
+        '<h3 class="post-card__title">' + esc(p.title) + '</h3>' +
+        '<p class="post-card__excerpt">' + esc(p.excerpt) + '</p>' +
+        '<span class="post-card__more">Read more' + icon('arrow-right') + '</span>' +
+      '</div></a>';
+  }
+  Array.prototype.slice.call(document.querySelectorAll('[data-posts]')).forEach(function (el) {
+    var limit = parseInt(el.getAttribute('data-limit'), 10) || POSTS.length;
+    el.innerHTML = POSTS.slice(0, limit).map(postCard).join('');
+  });
+
+  var releases = document.querySelector('[data-releases]');
+  if (releases) {
+    var params = new URLSearchParams(window.location.search);
+    var list = releases.querySelector('.posts');
+    var view = releases.querySelector('.post-view');
+    var filters = Array.prototype.slice.call(document.querySelectorAll('[data-filter]'));
+    var listing = document.querySelector('[data-releases-head]');
+
+    var renderList = function (category) {
+      var items = POSTS.filter(function (p) { return !category || p.category === category; });
+      list.innerHTML = items.length ? items.map(postCard).join('') : '<p class="lead">No releases in this category yet.</p>';
+      filters.forEach(function (b) {
+        b.setAttribute('aria-pressed', String((b.getAttribute('data-filter') || '') === (category || '')));
+      });
+    };
+    filters.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var c = b.getAttribute('data-filter');
+        renderList(c);
+        var url = c ? '?category=' + encodeURIComponent(c) : window.location.pathname;
+        window.history.replaceState(null, '', url);
+      });
+    });
+
+    var slug = params.get('post');
+    var post = slug && POSTS.filter(function (p) { return p.slug === slug; })[0];
+    if (post) {
+      document.title = post.title + ' — Vayence Inc';
+      if (listing) listing.hidden = true;
+      list.hidden = true;
+      view.hidden = false;
+      var others = POSTS.filter(function (p) { return p !== post; }).slice(0, 3);
+      view.innerHTML =
+        '<a class="post-view__back" href="releases.html">' + icon('arrow-left') + 'All releases</a>' +
+        '<header class="post-view__head">' +
+          '<p class="post-card__meta"><span class="tag">' + esc(post.category) + '</span><span>' + esc(post.year) + '</span></p>' +
+          '<h1 class="post-view__title">' + esc(post.title) + '</h1>' +
+          '<p class="statement">' + esc(post.excerpt) + '</p>' +
+        '</header>' +
+        '<figure class="post-view__media"><img src="' + post.image + '" alt="' + esc(post.imageAlt || '') + '"></figure>' +
+        '<div class="post-view__body">' +
+          post.body.map(function (para) { return '<p>' + esc(para) + '</p>'; }).join('') +
+          (post.quote ? '<figure class="quote"><blockquote class="quote__text">' + esc(post.quote.text) + '</blockquote>' +
+            '<figcaption class="small quote__cite">' + esc(post.quote.cite) + '</figcaption></figure>' : '') +
+        '</div>' +
+        (others.length ? '<div class="post-view__more"><h2 class="h3">More releases</h2><div class="posts">' + others.map(postCard).join('') + '</div></div>' : '');
+    } else {
+      renderList(params.get('category'));
+    }
+  }
+
+  // ---------- Partners marquee: duplicate the set so the loop is seamless ----------
+  Array.prototype.slice.call(document.querySelectorAll('.marquee__track')).forEach(function (track) {
+    var group = track.querySelector('.marquee__group');
+    if (!group) return;
+    var copy = group.cloneNode(true);
+    copy.setAttribute('aria-hidden', 'true');
+    Array.prototype.slice.call(copy.querySelectorAll('img')).forEach(function (img) { img.alt = ''; });
+    track.appendChild(copy);
+  });
+
+  // ---------- Reveal on scroll ----------
+  if ('IntersectionObserver' in window) {
     var revealObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
@@ -79,7 +296,7 @@
     });
   }
 
-  // Background videos: honour reduced motion, pause while off screen
+  // ---------- Background videos: honour reduced motion, pause while off screen ----------
   var videos = Array.prototype.slice.call(document.querySelectorAll('.video__media'));
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   videos.forEach(function (v) {
@@ -90,8 +307,8 @@
       entries.forEach(function (entry) {
         var v = entry.target;
         if (entry.isIntersecting) {
-          var p = v.play();
-          if (p && p.catch) p.catch(function () {});
+          var played = v.play();
+          if (played && played.catch) played.catch(function () {});
         } else {
           v.pause();
         }
@@ -100,57 +317,59 @@
     videos.forEach(function (v) { videoObserver.observe(v); });
   }
 
+  // ---------- Forms (no backend yet: hand off to the visitor's mail client) ----------
   function isEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
 
-  // Contact form: validate, then hand off to the visitor's mail client
   var form = document.getElementById('contact-form');
-  var status = form.querySelector('.form__status');
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var name = form.elements.name;
-    var email = form.elements.email;
-    var role = form.elements.role;
-    var message = form.elements.message;
-    var invalid = [];
+  if (form) {
+    var status = form.querySelector('.form__status');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = form.elements.name;
+      var email = form.elements.email;
+      var role = form.elements.role;
+      var message = form.elements.message;
+      var invalid = [];
 
-    [name, message].forEach(function (f) { if (!f.value.trim()) invalid.push(f); });
-    if (!isEmail(email.value.trim())) invalid.push(email);
+      [name, message].forEach(function (f) { if (!f.value.trim()) invalid.push(f); });
+      if (!isEmail(email.value.trim())) invalid.push(email);
 
-    [name, email, message].forEach(function (f) {
-      f.classList.toggle('is-invalid', invalid.indexOf(f) !== -1);
+      [name, email, message].forEach(function (f) {
+        f.classList.toggle('is-invalid', invalid.indexOf(f) !== -1);
+      });
+      if (invalid.length) {
+        status.textContent = 'Please fill in the required fields.';
+        invalid[0].focus();
+        return;
+      }
+
+      var subject = 'ProActive enquiry from ' + name.value.trim() + ' (' + role.value + ')';
+      var body = message.value.trim() + '\n\n—\n' + name.value.trim() + '\n' + email.value.trim() + '\n' + role.value;
+      window.location.href = 'mailto:' + CONTACT_EMAIL +
+        '?subject=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(body);
+      status.textContent = 'Opening your email app… If nothing happens, email us at ' + CONTACT_EMAIL + '.';
     });
-    if (invalid.length) {
-      status.textContent = 'Please fill in the required fields.';
-      invalid[0].focus();
-      return;
-    }
+    form.addEventListener('input', function (e) {
+      e.target.classList.remove('is-invalid');
+    });
+  }
 
-    var subject = 'ProActive enquiry from ' + name.value.trim() + ' (' + role.value + ')';
-    var body = message.value.trim() + '\n\n—\n' + name.value.trim() + '\n' + email.value.trim() + '\n' + role.value;
-    window.location.href = 'mailto:' + CONTACT_EMAIL +
-      '?subject=' + encodeURIComponent(subject) +
-      '&body=' + encodeURIComponent(body);
-    status.textContent = 'Opening your email app… If nothing happens, email us at ' + CONTACT_EMAIL + '.';
-  });
-  form.addEventListener('input', function (e) {
-    e.target.classList.remove('is-invalid');
-  });
-
-  // Newsletter: no backend yet, so send the sign-up request by email
-  var newsletter = document.getElementById('newsletter-form');
-  var newsletterStatus = document.getElementById('newsletter-status');
-  newsletter.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var email = newsletter.elements.email.value.trim();
-    if (!isEmail(email)) {
-      newsletterStatus.textContent = 'Please enter a valid email address.';
-      return;
-    }
-    window.location.href = 'mailto:' + CONTACT_EMAIL +
-      '?subject=' + encodeURIComponent('Subscribe to ProActive updates') +
-      '&body=' + encodeURIComponent('Please add ' + email + ' to the ProActive updates list.');
-    newsletterStatus.textContent = 'Thanks! Opening your email app to confirm.';
+  Array.prototype.slice.call(document.querySelectorAll('form[data-newsletter]')).forEach(function (nf) {
+    var nfStatus = nf.parentNode.querySelector('.form__status');
+    nf.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = nf.elements.email.value.trim();
+      if (!isEmail(email)) {
+        nfStatus.textContent = 'Please enter a valid email address.';
+        return;
+      }
+      window.location.href = 'mailto:' + CONTACT_EMAIL +
+        '?subject=' + encodeURIComponent('Subscribe to ProActive updates') +
+        '&body=' + encodeURIComponent('Please add ' + email + ' to the ProActive updates list.');
+      nfStatus.textContent = 'Thanks! Opening your email app to confirm.';
+    });
   });
 })();
