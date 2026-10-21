@@ -3,6 +3,7 @@
   --bg: #ffffff;
   --surface: #f7f6f6;
   --surface-2: #eeebeb;
+  --surface-3: #e5e1e1; /* a step darker than the page, for inset panels */
   --ink: #1f1b1c;
   --ink-2: #4b4546;
   --muted: #766e6f;
@@ -579,23 +580,31 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
-.awards-list { align-self: end; width: min(560px, 100%); }
+.awards-list { align-self: end; width: min(640px, 100%); }
 .awards-list li {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  gap: 20px;
   padding: 16px 0;
   border-top: 1px solid rgba(255, 255, 255, .22);
 }
 .awards-list h3 { font-size: 20px; font-weight: 400; line-height: 1.3; letter-spacing: -0.015em; }
 .awards-list p { margin-top: 2px; font-size: 13px; line-height: 1.45; color: rgba(255, 255, 255, .65); }
+.awards-list__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 72px;
+  height: 44px;
+}
+.awards-list__logo img { width: auto; height: auto; max-width: 72px; max-height: 40px; }
+.awards-list__text { flex: 1; min-width: 0; }
 .awards-list__year {
   flex-shrink: 0;
   font-size: 28px;
   line-height: 1;
   letter-spacing: -0.03em;
-  color: var(--brand);
+  color: var(--white);
 }
 
 /* ---------- Partners: one long white box ---------- */
@@ -606,7 +615,7 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
   justify-content: space-between;
   gap: 32px 48px;
   padding: 48px 56px;
-  background: var(--bg);
+  background: var(--surface-3);
   border-radius: var(--r-xl);
 }
 .partners-box img { width: auto; height: auto; max-width: 180px; max-height: 56px; }
@@ -946,6 +955,9 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
   .awards-card__lead { font-size: 15px; }
   .awards-list h3 { font-size: 17px; }
   .awards-list__year { font-size: 22px; }
+  .awards-list li { gap: 14px; }
+  .awards-list__logo { flex-basis: 52px; height: 36px; }
+  .awards-list__logo img { max-width: 52px; max-height: 32px; }
   .partners-box { gap: 24px 32px; padding: 28px 20px; }
   .partners-box img { max-width: 120px; max-height: 40px; }
 
