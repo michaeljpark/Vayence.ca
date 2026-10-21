@@ -20,12 +20,12 @@
   // ---------- Site map: one source for the header menus and the footer ----------
   var NAV = [
     {
-      id: 'product', label: 'Product', href: 'product.html',
-      blurb: 'ProActive, a self-inflating vest that responds when stress rises.',
+      id: 'products', label: 'Products', href: 'products.html',
+      blurb: 'Health technology by Vayence Inc. ProActive is our flagship product.',
       items: [
-        ['Overview', 'What ProActive is and who it’s for', 'product.html#overview'],
-        ['How it works', 'Monitor, relief and tracking', 'product.html#how'],
-        ['Design', 'Four decisions behind the vest', 'product.html#design']
+        ['ProActive', 'Self-inflating vest for sensory regulation', 'proactive.html'],
+        ['How ProActive works', 'Monitor, relief and tracking', 'proactive.html#how'],
+        ['Design', 'Four decisions behind the vest', 'proactive.html#design']
       ]
     },
     {

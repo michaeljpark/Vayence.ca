@@ -754,6 +754,31 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
 .subscribe__form { display: flex; flex-direction: column; gap: 8px; width: min(440px, 100%); }
 .subscribe__form .newsletter__form { background: var(--surface); }
 
+/* ---------- Products: featured case study ---------- */
+.case {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  background: var(--surface);
+}
+.case__media { display: block; min-height: 100%; overflow: hidden; background: var(--ink); }
+.case__media img { width: 100%; height: 100%; min-height: 460px; object-fit: cover; transition: transform .8s cubic-bezier(.2, .7, .2, 1); }
+.case:hover .case__media img { transform: scale(1.03); }
+.case__body { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 48px; }
+.case__title { font-size: 56px; font-weight: 400; line-height: 1; letter-spacing: -0.04em; }
+.case__lead { max-width: 480px; font-size: 17px; line-height: 1.55; color: var(--ink-2); }
+.case__facts { align-self: stretch; margin: 8px 0 12px; }
+.case__facts div { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-top: 1px solid var(--line-strong); }
+.case__facts dt { font-size: 13px; color: var(--muted); }
+.case__facts dd { font-size: 15px; color: var(--ink); }
+
+/* breadcrumb on the dark product card */
+.crumbs { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255, 255, 255, .6); }
+.crumbs a { color: rgba(255, 255, 255, .85); transition: color .2s ease; }
+.crumbs a:hover { color: var(--white); }
+.crumbs [aria-current] { color: var(--white); }
+
 /* ---------- Sub pages: clear the fixed header ---------- */
 .subpage { padding-top: 76px; }
 .product-hero .product-hero__head {
@@ -1150,6 +1175,11 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
 
   .grid--3 { grid-template-columns: 1fr; }
   .step { min-height: 0; padding: 24px; gap: 28px; }
+  .case { grid-template-columns: 1fr; }
+  .case__media img { min-height: 0; aspect-ratio: 4 / 3; }
+  .case__body { padding: 24px 20px 28px; }
+  .case__title { font-size: 40px; }
+  .case__facts div { grid-template-columns: 96px minmax(0, 1fr); }
 
   .member { padding: 20px; gap: 22px; }
   .member__header { flex-wrap: wrap; gap: 12px 14px; }
