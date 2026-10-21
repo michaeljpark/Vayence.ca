@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Releases — Vayence Inc</title>
-  <meta name="description" content="News, awards and updates from Vayence Inc and the ProActive project.">
+  <meta name="description" content="Awards, updates and newsletters from Vayence Inc and the ProActive project.">
   <meta property="og:title" content="Releases — Vayence Inc">
-  <meta property="og:description" content="News, awards and updates from Vayence Inc and the ProActive project.">
+  <meta property="og:description" content="Awards, updates and newsletters from Vayence Inc and the ProActive project.">
   <meta property="og:image" content="assets/img/hero-visual.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,45 +20,57 @@
     <header class="header" id="top" data-site-header></header>
 
     <main class="subpage">
-      <!-- Releases: list, or a single post when ?post=<slug> -->
-      <section class="section section--white releases" data-releases>
-        <div class="intro__head" data-releases-head>
+      <!-- Releases intro -->
+      <section class="section section--white" data-releases-head>
+        <div class="intro__head">
           <h1 class="intro__title">Releases</h1>
           <div class="intro__lead">
-            <p class="statement statement--lg">News, awards and updates <span class="muted">from Vayence Inc and the ProActive project.</span></p>
-          </div>
-        </div>
-        <div class="releases__body" id="list">
-          <nav class="releases__nav" aria-label="Release categories" data-releases-head>
-            <p class="eyebrow">Categories</p>
-            <ul class="filters">
-              <li><button class="filter" type="button" data-filter="" aria-pressed="false">All releases<span class="filter__count"></span></button></li>
-              <li><button class="filter" type="button" data-filter="Awards" aria-pressed="false">Awards<span class="filter__count"></span></button></li>
-              <li><button class="filter" type="button" data-filter="Updates" aria-pressed="false">Updates<span class="filter__count"></span></button></li>
-            </ul>
-          </nav>
-          <div class="releases__main">
-            <div class="post-list"></div>
-            <article class="post-view" hidden></article>
+            <p class="statement statement--lg">Awards, updates and newsletters <span class="muted">from Vayence Inc and the ProActive project.</span></p>
           </div>
         </div>
       </section>
 
-      <!-- Subscribe -->
-      <section class="section section--white subscribe" id="subscribe">
-        <div class="split">
-          <p class="eyebrow">Subscribe</p>
-          <div class="split__body">
-            <h2 class="statement statement--lg">Get new releases by email. <span class="muted">We’ll share awards, product updates and news as ProActive develops.</span></h2>
-            <div class="subscribe__form">
-              <form class="newsletter__form" data-newsletter novalidate>
-                <input type="email" name="email" placeholder="Email address" aria-label="Email address" autocomplete="email" required>
-                <button class="btn btn--primary btn--s" type="submit">Subscribe</button>
-              </form>
-              <p class="small form__status" role="status" aria-live="polite"></p>
-            </div>
+      <!-- One section per category, rendered from assets/data/posts.js -->
+      <section class="section section--white release-group" id="awards" data-releases-head>
+        <div class="section__head">
+          <div class="section__title">
+            <span class="chip">Awards</span>
+            <h2 class="h2">Recognition for ProActive</h2>
           </div>
         </div>
+        <div class="post-list" data-category="Awards"></div>
+      </section>
+
+      <section class="section section--white release-group" id="updates" data-releases-head>
+        <div class="section__head">
+          <div class="section__title">
+            <span class="chip">Updates</span>
+            <h2 class="h2">Product and company news</h2>
+          </div>
+        </div>
+        <div class="post-list" data-category="Updates"></div>
+      </section>
+
+      <section class="section section--white release-group" id="newsletter" data-releases-head>
+        <div class="section__head">
+          <div class="section__title">
+            <span class="chip">Newsletter</span>
+            <h2 class="h2">Newsletter</h2>
+          </div>
+        </div>
+        <div class="post-list" data-category="Newsletter" data-empty="No issues yet. Subscribe to get the first one by email."></div>
+        <div class="subscribe__form">
+          <form class="newsletter__form" data-newsletter novalidate>
+            <input type="email" name="email" placeholder="Email address" aria-label="Email address" autocomplete="email" required>
+            <button class="btn btn--primary btn--s" type="submit">Subscribe</button>
+          </form>
+          <p class="small form__status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- Single release (releases.html?post=<slug>) -->
+      <section class="section section--white" data-releases hidden>
+        <article class="post-view"></article>
       </section>
     </main>
 

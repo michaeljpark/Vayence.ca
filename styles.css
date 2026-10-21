@@ -686,35 +686,26 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
 }
 .post-card__more .i { width: 16px; height: 16px; transition: transform .2s ease; }
 .post-card:hover .post-card__more .i { transform: translateX(3px); }
-/* ---------- Releases page: category list | release rows ---------- */
-.releases__body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
-  gap: 48px;
-  align-items: start;
-}
-.releases.is-post .releases__body { grid-template-columns: 1fr; }
-.releases__nav { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 12px; }
-.filters { border-top: 1px solid var(--line); }
-.filter {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  width: 100%;
-  padding: 14px 0 14px 14px;
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  background: none;
+/* ---------- Releases page: one stacked section per category ---------- */
+.release-group { gap: 32px; }
+.post-list__empty { padding: 28px 0; border-bottom: 1px solid var(--line); font-size: 16px; color: var(--muted); }
+
+/* plain text link with an arrow, for secondary "see more" actions */
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid currentColor;
   font-size: 15px;
-  color: var(--muted);
-  text-align: left;
-  cursor: pointer;
-  box-shadow: inset 2px 0 0 transparent;
-  transition: color .2s ease, box-shadow .2s ease;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  transition: color .2s ease;
 }
-.filter:hover { color: var(--ink); }
-.filter[aria-pressed="true"] { color: var(--ink); font-weight: 500; box-shadow: inset 2px 0 0 var(--brand); }
-.filter__count { font-size: 13px; font-weight: 400; color: var(--muted); }
+.text-link img { transition: transform .2s ease; }
+.text-link:hover { color: var(--brand-ink); }
+.text-link:hover img { transform: translate(2px, -2px); }
 
 .post-list { border-top: 1px solid var(--line); }
 .post-row {
@@ -1088,8 +1079,6 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
 
   .grid--3 { grid-template-columns: 1fr; }
   .step { min-height: 240px; }
-  .releases__body { grid-template-columns: 1fr; gap: 28px; }
-  .releases__nav { position: static; }
   .post-row { grid-template-columns: 110px minmax(0, 1fr) 160px; gap: 24px; }
 
 

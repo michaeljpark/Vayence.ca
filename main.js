@@ -32,9 +32,9 @@
       id: 'releases', label: 'Releases', href: 'releases.html',
       blurb: 'News, awards and updates from Vayence Inc.',
       items: [
-        ['All releases', 'Every update in one place', 'releases.html#list'],
-        ['Awards', 'Recognition for ProActive', 'releases.html?category=Awards#list'],
-        ['Updates', 'Product and company news', 'releases.html?category=Updates#list']
+        ['Awards', 'Recognition for ProActive', 'releases.html#awards'],
+        ['Updates', 'Product and company news', 'releases.html#updates'],
+        ['Newsletter', 'Issues sent to subscribers', 'releases.html#newsletter']
       ]
     },
     {
@@ -214,44 +214,26 @@
       '</a>';
   }
 
-  var releases = document.querySelector('[data-releases]');
-  if (releases) {
-    var params = new URLSearchParams(window.location.search);
-    var list = releases.querySelector('.post-list');
-    var view = releases.querySelector('.post-view');
-    var filters = Array.prototype.slice.call(document.querySelectorAll('[data-filter]'));
-    var heads = Array.prototype.slice.call(document.querySelectorAll('[data-releases-head]'));
+  var groups = Array.prototype.slice.call(document.querySelectorAll('.post-list[data-category]'));
+  groups.forEach(function (el) {
+    var c = el.getAttribute('data-category');
+    var items = POSTS.filter(function (p) { return p.category === c; });
+    el.innerHTML = items.length ? items.map(postRow).join('')
+      : '<p class="post-list__empty">' + esc(el.getAttribute('data-empty') || 'Nothing here yet.') + '</p>';
+  });
 
-    filters.forEach(function (b) {
-      var c = b.getAttribute('data-filter');
-      b.querySelector('.filter__count').textContent = POSTS.filter(function (p) { return !c || p.category === c; }).length;
-    });
-    var renderList = function (category) {
-      var items = POSTS.filter(function (p) { return !category || p.category === category; });
-      list.innerHTML = items.length ? items.map(postRow).join('') : '<p class="lead">No releases in this category yet.</p>';
-      filters.forEach(function (b) {
-        b.setAttribute('aria-pressed', String((b.getAttribute('data-filter') || '') === (category || '')));
-      });
-    };
-    filters.forEach(function (b) {
-      b.addEventListener('click', function () {
-        var c = b.getAttribute('data-filter');
-        renderList(c);
-        window.history.replaceState(null, '', (c ? '?category=' + encodeURIComponent(c) : window.location.pathname) + '#list');
-      });
-    });
-
-    var slug = params.get('post');
+  var single = document.querySelector('[data-releases]');
+  if (single) {
+    var slug = new URLSearchParams(window.location.search).get('post');
     var post = slug && POSTS.filter(function (p) { return p.slug === slug; })[0];
     if (post) {
+      var view = single.querySelector('.post-view');
       document.title = post.title + ' — Vayence Inc';
-      heads.forEach(function (h) { h.hidden = true; });
-      releases.classList.add('is-post');
-      list.hidden = true;
-      view.hidden = false;
+      Array.prototype.slice.call(document.querySelectorAll('[data-releases-head]')).forEach(function (h) { h.hidden = true; });
+      single.hidden = false;
       var others = POSTS.filter(function (p) { return p !== post; }).slice(0, 3);
       view.innerHTML =
-        '<a class="post-view__back" href="releases.html#list">' + icon('arrow-left') + 'All releases</a>' +
+        '<a class="post-view__back" href="releases.html#' + post.category.toLowerCase() + '">' + icon('arrow-left') + 'Back to ' + esc(post.category) + '</a>' +
         '<header class="post-view__head">' +
           '<p class="post-card__meta"><span class="tag">' + esc(post.category) + '</span><span>' + esc(post.year) + '</span></p>' +
           '<h1 class="post-view__title">' + esc(post.title) + '</h1>' +
@@ -264,12 +246,10 @@
             '<figcaption class="small quote__cite">' + esc(post.quote.cite) + '</figcaption></figure>' : '') +
         '</div>' +
         (others.length ? '<div class="post-view__more"><h2 class="h3">More releases</h2><div class="post-list">' + others.map(postRow).join('') + '</div></div>' : '');
-    } else {
-      renderList(params.get('category'));
-      // the list is rendered after the browser's own jump to #list, so settle there again
-      if (window.location.hash === '#list') {
-        window.requestAnimationFrame(function () { document.getElementById('list').scrollIntoView(); });
-      }
+    } else if (groups.length && window.location.hash) {
+      // lists render after the browser's own jump to the anchor, so settle there again
+      var target = document.getElementById(window.location.hash.slice(1));
+      if (target) window.requestAnimationFrame(function () { target.scrollIntoView({ behavior: 'instant', block: 'start' }); });
     }
   }
 
