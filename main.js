@@ -20,13 +20,36 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') setMenu(false);
   });
+  document.addEventListener('click', function (e) {
+    if (!header.contains(e.target)) setMenu(false);
+  });
+  window.matchMedia('(min-width: 1101px)').addEventListener('change', function (e) {
+    if (e.matches) setMenu(false);
+  });
 
-  // Header shadow once the page scrolls
-  function onScroll() {
-    header.classList.toggle('is-scrolled', window.scrollY > 8);
+  // Header goes from clear glass (over the hero video) to a solid white bar:
+  // --p runs 0 → 1 over the first ~60% of the video's height
+  var heroVideo = document.querySelector('.hero-video');
+  var ticking = false;
+  function updateHeader() {
+    ticking = false;
+    var p = 1;
+    if (heroVideo) {
+      var range = Math.max(heroVideo.offsetHeight * 0.6, 1);
+      p = Math.min(Math.max(window.scrollY / range, 0), 1);
+    }
+    // foreground eases in over the middle of the range (smoothstep .25 → .6)
+    var q = Math.min(Math.max((p - 0.25) / 0.35, 0), 1);
+    q = q * q * (3 - 2 * q);
+    header.style.setProperty('--p', p.toFixed(3));
+    header.style.setProperty('--q', q.toFixed(3));
   }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  function requestUpdate() {
+    if (!ticking) { ticking = true; window.requestAnimationFrame(updateHeader); }
+  }
+  window.addEventListener('scroll', requestUpdate, { passive: true });
+  window.addEventListener('resize', requestUpdate);
+  updateHeader();
 
   if ('IntersectionObserver' in window) {
     // Highlight the nav item for the section in view
