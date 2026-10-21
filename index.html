@@ -16,7 +16,7 @@
 <body>
   <div class="page">
 
-    <!-- Header -->
+    <!-- Header: glass bar floating over the first video -->
     <header class="header" id="top">
       <a class="logo" href="#top" aria-label="Vayence Inc home">
         <img src="assets/logos/vayence-header.svg" width="158.92" height="30.16" alt="Vayence Inc">
@@ -24,11 +24,10 @@
       <nav class="nav" id="nav" aria-label="Primary">
         <a class="nav__item" href="#problem">The problem</a>
         <a class="nav__item" href="#how">How it works</a>
-        <a class="nav__item" href="#design">Specifications</a>
         <a class="nav__item" href="#recognition">Recognition</a>
         <a class="nav__item" href="#about">About</a>
       </nav>
-      <a class="btn btn--dark btn--s header__cta" href="#contact">
+      <a class="btn btn--primary btn--s header__cta" href="#contact">
         Contact us
         <img src="assets/icons/arrow-white-sm.svg" width="14" height="14" alt="">
       </a>
@@ -49,12 +48,21 @@
       </section>
 
       <!-- Hero -->
-      <section class="hero">
-        <div class="hero__copy">
-          <span class="chip"><img src="assets/icons/dot.svg" width="6" height="6" alt="">ProActive by Vayence Inc</span>
-          <h1 class="display">Simulating a hug when you need it.</h1>
-          <div class="hero__bottom">
-            <p class="lead">Developed by Vayence Inc, ProActive is a reusable, self-inflating vest for people with autism and sensory sensitivities. When its sensors pick up rising stress, the vest inflates to apply deep pressure, then deflates once the wearer is calm.</p>
+      <section class="section section--white intro">
+        <div class="intro__top">
+          <h1 class="display intro__title">Simulating a hug when you need it.</h1>
+          <figure class="intro__photo">
+            <img src="assets/img/hero-visual.jpg" alt="A person zipping up the ProActive vest prototype">
+            <figcaption class="intro__caption">
+              <span class="label">ProActive prototype</span>
+              <span class="small">In development, not yet available for sale.</span>
+            </figcaption>
+          </figure>
+        </div>
+        <div class="split">
+          <p class="eyebrow">ProActive by Vayence Inc</p>
+          <div class="split__body">
+            <p class="statement">Developed by Vayence Inc, ProActive is a reusable, self-inflating vest for people with autism and sensory sensitivities. <span class="muted">When its sensors pick up rising stress, the vest inflates to apply deep pressure, then deflates once the wearer is calm.</span></p>
             <div class="actions">
               <a class="btn btn--primary" href="#how">
                 How it works
@@ -67,77 +75,43 @@
             </div>
           </div>
         </div>
-        <div class="hero__visual">
-          <img class="hero__img" src="assets/img/hero-visual.jpg" alt="A person zipping up the ProActive vest prototype">
-          <div class="caption">
-            <div class="caption__text">
-              <p class="title-s">ProActive prototype</p>
-              <p class="small muted">In development, not yet available for sale.</p>
-            </div>
-            <span class="year year--sm">2026</span>
+
+        <!-- The problem -->
+        <div class="split" id="problem">
+          <p class="eyebrow">The problem</p>
+          <div class="split__body">
+            <h2 class="statement statement--lg">Sensory overload happens in everyday places. <span class="muted">Classrooms, grocery stores, transit and waiting rooms can all trigger it. These moments are hard to predict, and most existing products are either ineffective, too intrusive, or can’t respond when overload actually happens.</span></h2>
           </div>
         </div>
-      </section>
 
-      <!-- The problem -->
-      <section class="section section--white" id="problem">
-        <div class="section__head">
-          <div class="section__title">
-            <span class="chip">The problem</span>
-            <h2 class="h2">Sensory overload happens in everyday places.</h2>
-          </div>
-          <p class="lead section__lead section__lead--wide">Classrooms, grocery stores, transit and waiting rooms can all trigger it. These moments are hard to predict, and most existing products are either ineffective, too intrusive, or can’t respond when overload actually happens.</p>
-        </div>
-        <div class="grid grid--4">
-          <article class="trigger">
-            <div class="trigger__top">
-              <span class="icon-box"><img src="assets/icons/volume.svg" width="28" height="28" alt=""></span>
-              <span class="label muted">01</span>
-            </div>
-            <div class="trigger__text">
-              <h3 class="title">Sound</h3>
-              <p class="body muted">Loud or sudden noise.</p>
-            </div>
-          </article>
-          <article class="trigger">
-            <div class="trigger__top">
-              <span class="icon-box"><img src="assets/icons/sun.svg" width="28" height="28" alt=""></span>
-              <span class="label muted">02</span>
-            </div>
-            <div class="trigger__text">
-              <h3 class="title">Light</h3>
-              <p class="body muted">Bright or flickering lights.</p>
-            </div>
-          </article>
-          <article class="trigger">
-            <div class="trigger__top">
-              <span class="icon-box"><img src="assets/icons/users.svg" width="28" height="28" alt=""></span>
-              <span class="label muted">03</span>
-            </div>
-            <div class="trigger__text">
-              <h3 class="title">Crowds</h3>
-              <p class="body muted">Busy, crowded spaces.</p>
-            </div>
-          </article>
-          <article class="trigger">
-            <div class="trigger__top">
-              <span class="icon-box"><img src="assets/icons/shapes.svg" width="28" height="28" alt=""></span>
-              <span class="label muted">04</span>
-            </div>
-            <div class="trigger__text">
-              <h3 class="title">Touch and texture</h3>
-              <p class="body muted">Uncomfortable fabrics and unexpected contact.</p>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <!-- POV video -->
-      <section class="section section--white pov">
-        <div class="pov__video">
+        <!-- Sensory overwhelm: dark video card -->
+        <div class="sensory">
           <video class="video__media" src="assets/video/proactive-pov.mp4" poster="assets/video/proactive-pov-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Point-of-view footage of sensory overload on a busy street"></video>
+          <h3 class="sensory__title">Sensory overwhelm.<br><span>It can happen anywhere.</span></h3>
+          <p class="sensory__label small">Everyday triggers</p>
+          <ul class="sensory__stats">
+            <li class="stat stat--tall">
+              <span class="stat__num">01</span>
+              <span class="stat__title">Sound</span>
+              <span class="stat__desc">Loud or sudden noise.</span>
+            </li>
+            <li class="stat">
+              <span class="stat__num">02</span>
+              <span class="stat__title">Light</span>
+              <span class="stat__desc">Bright or flickering lights.</span>
+            </li>
+            <li class="stat">
+              <span class="stat__num">03</span>
+              <span class="stat__title">Crowds</span>
+              <span class="stat__desc">Busy, crowded spaces.</span>
+            </li>
+            <li class="stat">
+              <span class="stat__num">04</span>
+              <span class="stat__title">Touch</span>
+              <span class="stat__desc">Uncomfortable fabrics and unexpected contact.</span>
+            </li>
+          </ul>
         </div>
-        <h2 class="h2 pov__title">Sensory overwhelm.<br><span class="muted">It can happen anywhere.</span></h2>
       </section>
 
       <!-- How it works -->
@@ -183,54 +157,8 @@
         </div>
       </section>
 
-      <!-- Design -->
-      <section class="section section--white" id="design">
-        <div class="section__head">
-          <div class="section__title">
-            <span class="chip">Design</span>
-            <h2 class="h2">What makes ProActive different</h2>
-          </div>
-          <p class="lead section__lead">Four design decisions set ProActive apart from weighted and compression vests.</p>
-        </div>
-        <div class="design-row">
-          <div class="photo photo--fabric">
-            <img src="assets/img/hero-visual.jpg" alt="Close-up of the ProActive vest fabric">
-          </div>
-          <ol class="feature-list">
-            <li class="feature">
-              <span class="num-box label">01</span>
-              <div class="feature__text">
-                <h3 class="title">Pressure only when it’s needed</h3>
-                <p class="body muted">Weighted and compression vests apply the same pressure all day. ProActive inflates when it detects rising stress and deflates once readings return to baseline.</p>
-              </div>
-            </li>
-            <li class="feature">
-              <span class="num-box label">02</span>
-              <div class="feature__text">
-                <h3 class="title">Made for sensitive skin</h3>
-                <p class="body muted">Soft, skin-friendly materials, chosen with hypersensitive users in mind.</p>
-              </div>
-            </li>
-            <li class="feature">
-              <span class="num-box label">03</span>
-              <div class="feature__text">
-                <h3 class="title">Placed to feel like a hug</h3>
-                <p class="body muted">The air bladders are positioned around the torso to recreate the feeling of being hugged.</p>
-              </div>
-            </li>
-            <li class="feature">
-              <span class="num-box label">04</span>
-              <div class="feature__text">
-                <h3 class="title">Updates for caretakers</h3>
-                <p class="body muted">Caretakers receive notifications when they’re relevant, which helps reduce caregiver stress.</p>
-              </div>
-            </li>
-          </ol>
-        </div>
-      </section>
-
       <!-- Recognition -->
-      <section class="section" id="recognition">
+      <section class="section section--white" id="recognition">
         <div class="section__head">
           <div class="section__title">
             <span class="chip">Recognition</span>
@@ -276,7 +204,7 @@
       </section>
 
       <!-- Partners -->
-      <section class="section section--white" id="partners">
+      <section class="section" id="partners">
         <div class="section__head">
           <div class="section__title">
             <span class="chip">Partners</span>
@@ -291,7 +219,7 @@
       </section>
 
       <!-- About -->
-      <section class="section" id="about">
+      <section class="section section--white" id="about">
         <div class="about-row">
           <div class="section__title about__head">
             <span class="chip">About</span>
@@ -425,7 +353,6 @@
             <p class="label muted">Explore</p>
             <a class="body" href="#problem">The problem</a>
             <a class="body" href="#how">How it works</a>
-            <a class="body" href="#design">Specifications</a>
             <a class="body" href="#recognition">Recognition</a>
             <a class="body" href="#about">About Vayence Inc</a>
           </div>
