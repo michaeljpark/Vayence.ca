@@ -72,8 +72,8 @@ window.VAYENCE_POSTS = [
     dateLabel: 'October 7, 2025',
     title: 'ProActive featured in Dezeen’s OCAD University school show',
     excerpt: 'Dezeen features the self-inflating vest among projects from OCAD University’s Faculty of Design.',
-    image: 'assets/img/hero-visual.jpg',
-    imageAlt: 'A person zipping up the ProActive vest prototype',
+    image: 'assets/img/dezeen-vest.jpg',
+    imageAlt: 'The ProActive vest prototype lying flat, with its air tubes',
     body: [
       'Dezeen featured ProActive in its school show of projects from OCAD University’s Faculty of Design.',
       'The feature describes a reusable, self-inflating vest designed to support people with high care needs and sensory sensitivities, particularly autism, by applying deep pressure touch to ease sensory overload. It also notes that the designers have filed a patent and launched a company to bring the product to market.'
