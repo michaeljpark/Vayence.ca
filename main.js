@@ -189,11 +189,16 @@
 
   // ---------- Releases ----------
   var POSTS = window.VAYENCE_POSTS || [];
+  function when(p) { return esc(p.dateLabel || p.year || ''); }
+  function img(p, lazy) {
+    return '<img src="' + p.image + '" alt="' + esc(p.imageAlt || '') + '"' + (lazy ? ' loading="lazy"' : '') +
+      (p.imagePosition ? ' style="object-position:' + esc(p.imagePosition) + '"' : '') + '>';
+  }
   function postCard(p) {
     return '<a class="post-card" href="releases.html?post=' + encodeURIComponent(p.slug) + '">' +
-      '<figure class="post-card__media"><img src="' + p.image + '" alt="' + esc(p.imageAlt || '') + '" loading="lazy"></figure>' +
+      '<figure class="post-card__media">' + img(p, true) + '</figure>' +
       '<div class="post-card__body">' +
-        '<p class="post-card__meta"><span class="tag">' + esc(p.category) + '</span><span>' + esc(p.year) + '</span></p>' +
+        '<p class="post-card__meta"><span class="tag">' + esc(p.category) + '</span><span>' + when(p) + '</span></p>' +
         '<h3 class="post-card__title">' + esc(p.title) + '</h3>' +
         '<p class="post-card__excerpt">' + esc(p.excerpt) + '</p>' +
         '<span class="post-card__more">Read more' + icon('arrow-right') + '</span>' +
@@ -207,10 +212,10 @@
   // one row per release: meta | title + excerpt | thumbnail
   function postRow(p) {
     return '<a class="post-row" href="releases.html?post=' + encodeURIComponent(p.slug) + '">' +
-      '<p class="post-row__meta"><span class="tag">' + esc(p.category) + '</span><span>' + esc(p.year) + '</span></p>' +
+      '<p class="post-row__meta"><span class="tag">' + esc(p.category) + '</span><span>' + when(p) + '</span></p>' +
       '<div class="post-row__text"><h2 class="post-row__title">' + esc(p.title) + '</h2>' +
         '<p class="post-row__excerpt">' + esc(p.excerpt) + '</p></div>' +
-      '<figure class="post-row__media"><img src="' + p.image + '" alt="" loading="lazy"></figure>' +
+      '<figure class="post-row__media">' + img({ image: p.image, imagePosition: p.imagePosition }, true) + '</figure>' +
       '</a>';
   }
 
@@ -235,16 +240,25 @@
       view.innerHTML =
         '<a class="post-view__back" href="releases.html#' + post.category.toLowerCase() + '">' + icon('arrow-left') + 'Back to ' + esc(post.category) + '</a>' +
         '<header class="post-view__head">' +
-          '<p class="post-card__meta"><span class="tag">' + esc(post.category) + '</span><span>' + esc(post.year) + '</span></p>' +
+          '<p class="post-card__meta"><span class="tag">' + esc(post.category) + '</span><span>' + when(post) + '</span></p>' +
           '<h1 class="post-view__title">' + esc(post.title) + '</h1>' +
           '<p class="statement">' + esc(post.excerpt) + '</p>' +
         '</header>' +
-        '<figure class="post-view__media"><img src="' + post.image + '" alt="' + esc(post.imageAlt || '') + '"></figure>' +
+        '<figure class="post-view__media">' + img(post) + '</figure>' +
         '<div class="post-view__body">' +
           post.body.map(function (para) { return '<p>' + esc(para) + '</p>'; }).join('') +
           (post.quote ? '<figure class="quote"><blockquote class="quote__text">' + esc(post.quote.text) + '</blockquote>' +
             '<figcaption class="small quote__cite">' + esc(post.quote.cite) + '</figcaption></figure>' : '') +
         '</div>' +
+        (post.videos ? '<div class="post-videos">' + post.videos.map(function (v) {
+          return '<figure class="post-video"><div class="post-video__frame"><iframe src="' + v.embed + '&title=0&byline=0&portrait=0" title="' + esc(v.title) + '" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>' +
+            '<figcaption><span>' + esc(v.title) + '</span><span class="muted">' + esc(v.duration || '') + '</span></figcaption></figure>';
+        }).join('') + '</div>' : '') +
+        ((post.source || post.links) ? '<ul class="post-sources">' +
+          (post.source ? '<li><a class="text-link" href="' + post.source.url + '" target="_blank" rel="noopener">' + esc(post.source.cta || ('Read on ' + post.source.name)) + '<img src="assets/icons/arrow-ink.svg" width="16" height="16" alt=""></a></li>' : '') +
+          (post.links || []).map(function (l) {
+            return '<li><a class="text-link" href="' + l.url + '" target="_blank" rel="noopener">' + esc(l.label) + '<img src="assets/icons/arrow-ink.svg" width="16" height="16" alt=""></a></li>';
+          }).join('') + '</ul>' : '') +
         (others.length ? '<div class="post-view__more"><h2 class="h3">More releases</h2><div class="post-list">' + others.map(postRow).join('') + '</div></div>' : '');
     } else if (groups.length && window.location.hash) {
       // lists render after the browser's own jump to the anchor, so settle there again
