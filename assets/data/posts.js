@@ -108,8 +108,9 @@ window.VAYENCE_POSTS = [
     dateLabel: '2025',
     title: 'People’s Choice Award from ACIDO',
     excerpt: 'ProActive receives the People’s Choice Award from the Association of Chartered Industrial Designers of Ontario.',
-    image: 'assets/video/proactive-pov-poster.jpg',
-    imageAlt: 'Blurred point-of-view view of a busy street',
+    image: 'assets/img/acido-founders.jpg',
+    imageAlt: 'Marzuq Vohra and Vienna Doria-Pighin in front of their ProActive research boards',
+    imagePosition: '50% 30%',
     body: [
       'ProActive received the 2025 People’s Choice Award from ACIDO, the Association of Chartered Industrial Designers of Ontario, at its Rocket showcase.'
     ],
