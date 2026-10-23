@@ -219,8 +219,8 @@
       '</a>';
   }
 
-  var groups = Array.prototype.slice.call(document.querySelectorAll('.post-list[data-category]'));
-  groups.forEach(function (el) {
+  var lists = Array.prototype.slice.call(document.querySelectorAll('.post-list[data-category]'));
+  lists.forEach(function (el) {
     var c = el.getAttribute('data-category');
     var items = POSTS.filter(function (p) { return p.category === c; });
     el.innerHTML = items.length ? items.map(postRow).join('')
@@ -260,7 +260,7 @@
             return '<li><a class="text-link" href="' + l.url + '" target="_blank" rel="noopener">' + esc(l.label) + '<img src="assets/icons/arrow-ink.svg" width="16" height="16" alt=""></a></li>';
           }).join('') + '</ul>' : '') +
         (others.length ? '<div class="post-view__more"><h2 class="h3">More releases</h2><div class="post-list">' + others.map(postRow).join('') + '</div></div>' : '');
-    } else if (groups.length && window.location.hash) {
+    } else if (lists.length && window.location.hash) {
       // lists render after the browser's own jump to the anchor, so settle there again
       var target = document.getElementById(window.location.hash.slice(1));
       if (target) window.requestAnimationFrame(function () { target.scrollIntoView({ behavior: 'instant', block: 'start' }); });
