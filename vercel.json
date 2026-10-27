@@ -1,0 +1,5 @@
+{
+  "functions": {
+    "api/posts.js": { "maxDuration": 30 }
+  }
+}

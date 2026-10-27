@@ -287,6 +287,11 @@
         nfStatus.textContent = 'Please enter a valid email address.';
         return;
       }
+      // the team's own address opens the releases editor (admin.html checks the Google sign-in)
+      if (email.toLowerCase() === CONTACT_EMAIL) {
+        window.location.href = 'admin.html';
+        return;
+      }
       window.location.href = 'mailto:' + CONTACT_EMAIL +
         '?subject=' + encodeURIComponent('Subscribe to ProActive updates') +
         '&body=' + encodeURIComponent('Please add ' + email + ' to the ProActive updates list.');

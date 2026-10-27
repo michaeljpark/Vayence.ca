@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage releases — Vayence Inc</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="admin">
+  <div class="page">
+
+    <!-- Header and footer are rendered by main.js from one site map -->
+    <header class="header" id="top" data-site-header></header>
+
+    <main class="subpage">
+      <section class="section section--white">
+        <div class="intro__head">
+          <h1 class="intro__title">Manage releases</h1>
+          <div class="intro__lead">
+            <p class="statement statement--lg">Write and edit posts <span class="muted">for Awards, Updates and the Newsletter. Changes go live about a minute after you save.</span></p>
+          </div>
+        </div>
+
+        <!-- Signed out -->
+        <div class="admin-signin" data-admin-signin>
+          <p class="lead">Sign in with the Vayence Inc Google account to continue.</p>
+          <div data-google-button></div>
+          <p class="small form__status" data-signin-status role="status" aria-live="polite"></p>
+        </div>
+
+        <!-- Signed in: post list -->
+        <div class="admin" data-admin hidden>
+          <div class="admin__bar">
+            <p class="small muted">Signed in as <span data-admin-email></span> · <button class="admin__link" type="button" data-sign-out>Sign out</button></p>
+            <div class="admin__actions">
+              <label class="field admin__filter">
+                <span class="field__label">Show</span>
+                <select class="field__box field__select" data-filter>
+                  <option value="Newsletter">Newsletter</option>
+                  <option value="Updates">Updates</option>
+                  <option value="Awards">Awards</option>
+                  <option value="">All posts</option>
+                </select>
+              </label>
+              <button class="btn btn--primary" type="button" data-new>New post</button>
+            </div>
+          </div>
+          <div class="post-list" data-admin-list></div>
+          <p class="small form__status" data-list-status role="status" aria-live="polite"></p>
+        </div>
+
+        <!-- Editor -->
+        <form class="form admin-editor" data-editor novalidate hidden>
+          <button class="admin__link admin-editor__back" type="button" data-cancel>← Back to posts</button>
+          <h2 class="h3" data-editor-title>New post</h2>
+          <div class="form__row">
+            <label class="field">
+              <span class="field__label">Section</span>
+              <select class="field__box field__select" name="category">
+                <option>Newsletter</option>
+                <option>Updates</option>
+                <option>Awards</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">Date *</span>
+              <input class="field__box" type="date" name="date" required>
+            </label>
+            <label class="field">
+              <span class="field__label">Date shown</span>
+              <input class="field__box" type="text" name="dateLabel" placeholder="From the date, e.g. October 27, 2026" maxlength="40">
+            </label>
+          </div>
+          <label class="field">
+            <span class="field__label">Title *</span>
+            <input class="field__box" type="text" name="title" maxlength="200" required>
+          </label>
+          <label class="field">
+            <span class="field__label">Summary * <span class="muted">— shown in lists and search results</span></span>
+            <textarea class="field__box field__box--area admin-editor__short" name="excerpt" maxlength="400" required></textarea>
+          </label>
+          <label class="field">
+            <span class="field__label">Body * <span class="muted">— leave a blank line between paragraphs</span></span>
+            <textarea class="field__box field__box--area admin-editor__body" name="body" required></textarea>
+          </label>
+
+          <div class="admin-editor__image">
+            <figure class="admin-editor__preview"><img data-preview alt=""></figure>
+            <div class="admin-editor__image-fields">
+              <label class="field">
+                <span class="field__label">Image</span>
+                <input class="field__box admin-editor__file" type="file" name="image" accept="image/jpeg,image/png,image/webp">
+              </label>
+              <label class="field">
+                <span class="field__label">Image description <span class="muted">— for screen readers and search</span></span>
+                <input class="field__box" type="text" name="imageAlt" maxlength="300">
+              </label>
+            </div>
+          </div>
+
+          <label class="field">
+            <span class="field__label">Quote <span class="muted">— optional</span></span>
+            <textarea class="field__box field__box--area admin-editor__short" name="quoteText" maxlength="1000"></textarea>
+          </label>
+          <label class="field">
+            <span class="field__label">Quote by</span>
+            <input class="field__box" type="text" name="quoteCite" maxlength="200" placeholder="e.g. Marzuq Vohra, co-founder">
+          </label>
+          <div class="form__row">
+            <label class="field">
+              <span class="field__label">Source name</span>
+              <input class="field__box" type="text" name="sourceName" maxlength="100" placeholder="e.g. OCAD University">
+            </label>
+            <label class="field">
+              <span class="field__label">Source link</span>
+              <input class="field__box" type="url" name="sourceUrl" maxlength="500" placeholder="https://">
+            </label>
+          </div>
+
+          <div class="form__submit">
+            <button class="btn btn--primary" type="submit" data-save>Publish</button>
+            <button class="admin__link admin__link--danger" type="button" data-delete hidden>Delete post</button>
+            <p class="small form__status" data-editor-status role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <footer class="footer" data-site-footer></footer>
+
+  </div>
+  <script src="main.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async></script>
+  <script src="admin.js"></script>
+</body>
+</html>
