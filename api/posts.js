@@ -245,7 +245,9 @@ function decodeImage(dataUrl, slug, n) {
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   try {
-    if (!process.env.GITHUB_TOKEN) throw fail(500, 'The site is missing its GITHUB_TOKEN setting.');
+    // names only, never values
+    const missing = ['GITHUB_TOKEN', 'GOOGLE_CLIENT_ID'].filter((k) => !(process.env[k] || '').trim());
+    if (missing.length) throw fail(500, 'The site is missing these settings: ' + missing.join(', ') + '.');
     if (req.method === 'GET') {
       const snap = await snapshot();
       return res.status(200).json({ clientId: CLIENT_ID, admin: ADMIN_EMAIL, posts: snap.posts });
