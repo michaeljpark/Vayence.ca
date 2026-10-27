@@ -56,78 +56,78 @@
           <p class="small form__status" data-list-status role="status" aria-live="polite"></p>
         </div>
 
-        <!-- Editor -->
-        <form class="form admin-editor" data-editor novalidate hidden>
-          <button class="admin__link admin-editor__back" type="button" data-cancel>← Back to posts</button>
-          <h2 class="h3" data-editor-title>New post</h2>
-          <div class="form__row">
-            <label class="field">
-              <span class="field__label">Section</span>
-              <select class="field__box field__select" name="category">
-                <option>Newsletter</option>
-                <option>Updates</option>
-                <option>Awards</option>
-              </select>
-            </label>
-            <label class="field">
-              <span class="field__label">Date *</span>
-              <input class="field__box" type="date" name="date" required>
-            </label>
-            <label class="field">
-              <span class="field__label">Date shown</span>
-              <input class="field__box" type="text" name="dateLabel" placeholder="From the date, e.g. October 27, 2026" maxlength="40">
-            </label>
+        <!-- Editor: the document on the left, post settings on the right -->
+        <form class="admin-editor" data-editor novalidate hidden>
+          <div class="admin-editor__top">
+            <button class="admin__link admin-editor__back" type="button" data-cancel>← Back to posts</button>
+            <p class="small muted admin-editor__draft" data-draft-status role="status" aria-live="polite"></p>
           </div>
-          <label class="field">
-            <span class="field__label">Title *</span>
-            <input class="field__box" type="text" name="title" maxlength="200" required>
-          </label>
-          <label class="field">
-            <span class="field__label">Summary * <span class="muted">— shown in lists and search results</span></span>
-            <textarea class="field__box field__box--area admin-editor__short" name="excerpt" maxlength="400" required></textarea>
-          </label>
-          <label class="field">
-            <span class="field__label">Body * <span class="muted">— leave a blank line between paragraphs</span></span>
-            <textarea class="field__box field__box--area admin-editor__body" name="body" required></textarea>
-          </label>
+          <div class="admin-editor__grid">
+            <div class="admin-editor__main">
+              <p class="chip" data-editor-title>New post</p>
+              <textarea class="admin-editor__title" name="title" rows="1" maxlength="200" placeholder="Title" aria-label="Title" required></textarea>
+              <textarea class="admin-editor__excerpt" name="excerpt" rows="2" maxlength="400" placeholder="Summary: one or two sentences, shown in lists and search results" aria-label="Summary" required></textarea>
+              <div data-doc></div>
+            </div>
 
-          <div class="admin-editor__image">
-            <figure class="admin-editor__preview"><img data-preview alt=""></figure>
-            <div class="admin-editor__image-fields">
+            <aside class="admin-editor__side form">
+              <div class="admin-editor__publish">
+                <button class="btn btn--primary" type="submit" data-save>Publish</button>
+                <p class="small form__status" data-editor-status role="status" aria-live="polite"></p>
+              </div>
               <label class="field">
-                <span class="field__label">Image</span>
-                <input class="field__box admin-editor__file" type="file" name="image" accept="image/jpeg,image/png,image/webp">
+                <span class="field__label">Section</span>
+                <select class="field__box field__select" name="category">
+                  <option>Newsletter</option>
+                  <option>Updates</option>
+                  <option>Awards</option>
+                </select>
               </label>
               <label class="field">
-                <span class="field__label">Image description <span class="muted">— for screen readers and search</span></span>
+                <span class="field__label">Date *</span>
+                <input class="field__box" type="date" name="date" required>
+              </label>
+              <label class="field">
+                <span class="field__label">Date shown</span>
+                <input class="field__box" type="text" name="dateLabel" placeholder="From the date" maxlength="40">
+              </label>
+
+              <div class="field">
+                <span class="field__label">Cover image <span class="muted">— or the first picture in the post</span></span>
+                <figure class="admin-editor__preview" hidden><img data-preview alt=""></figure>
+                <input class="field__box admin-editor__file" type="file" name="image" accept="image/jpeg,image/png,image/webp" aria-label="Cover image">
+              </div>
+              <label class="field">
+                <span class="field__label">Cover description <span class="muted">— for screen readers and search</span></span>
                 <input class="field__box" type="text" name="imageAlt" maxlength="300">
               </label>
-            </div>
-          </div>
 
-          <label class="field">
-            <span class="field__label">Quote <span class="muted">— optional</span></span>
-            <textarea class="field__box field__box--area admin-editor__short" name="quoteText" maxlength="1000"></textarea>
-          </label>
-          <label class="field">
-            <span class="field__label">Quote by</span>
-            <input class="field__box" type="text" name="quoteCite" maxlength="200" placeholder="e.g. Marzuq Vohra, co-founder">
-          </label>
-          <div class="form__row">
-            <label class="field">
-              <span class="field__label">Source name</span>
-              <input class="field__box" type="text" name="sourceName" maxlength="100" placeholder="e.g. OCAD University">
-            </label>
-            <label class="field">
-              <span class="field__label">Source link</span>
-              <input class="field__box" type="url" name="sourceUrl" maxlength="500" placeholder="https://">
-            </label>
-          </div>
-
-          <div class="form__submit">
-            <button class="btn btn--primary" type="submit" data-save>Publish</button>
-            <button class="admin__link admin__link--danger" type="button" data-delete hidden>Delete post</button>
-            <p class="small form__status" data-editor-status role="status" aria-live="polite"></p>
+              <label class="field">
+                <span class="field__label">Closing quote</span>
+                <textarea class="field__box field__box--area admin-editor__short" name="quoteText" maxlength="1000" placeholder="Optional"></textarea>
+              </label>
+              <label class="field">
+                <span class="field__label">Quote by</span>
+                <input class="field__box" type="text" name="quoteCite" maxlength="200" placeholder="e.g. Marzuq Vohra, co-founder">
+              </label>
+              <label class="field">
+                <span class="field__label">Source name</span>
+                <input class="field__box" type="text" name="sourceName" maxlength="100" placeholder="e.g. OCAD University">
+              </label>
+              <label class="field">
+                <span class="field__label">Source link</span>
+                <input class="field__box" type="url" name="sourceUrl" maxlength="500" placeholder="https://">
+              </label>
+              <label class="field">
+                <span class="field__label">More links <span class="muted">— one per line: Label | https://…</span></span>
+                <textarea class="field__box field__box--area admin-editor__short" name="links" spellcheck="false"></textarea>
+              </label>
+              <label class="field">
+                <span class="field__label">Videos <span class="muted">— one per line: Title | Vimeo or YouTube link | 2:09</span></span>
+                <textarea class="field__box field__box--area admin-editor__short" name="videos" spellcheck="false"></textarea>
+              </label>
+              <button class="admin__link admin__link--danger" type="button" data-delete hidden>Delete post</button>
+            </aside>
           </div>
         </form>
       </section>
@@ -138,6 +138,7 @@
   </div>
   <script src="main.js"></script>
   <script src="https://accounts.google.com/gsi/client" async></script>
+  <script src="doc-editor.js"></script>
   <script src="admin.js"></script>
 </body>
 </html>

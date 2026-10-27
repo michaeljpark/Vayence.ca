@@ -1,8 +1,9 @@
 // Releases admin API (Vercel function), used by admin.html.
 //   GET  /api/posts                      → { clientId, admin, posts }   (public)
 //   POST /api/posts { action: 'save', post, image? } | { action: 'delete', slug }
+//        (image is a new cover as a data URL; new images inside the body come as body blocks)
 // Writes need a Google ID token for ADMIN_EMAIL. Each change is a single commit to GitHub:
-// posts.json, the regenerated release pages, lists and sitemap, plus any uploaded image.
+// posts.json, the regenerated release pages, lists and sitemap, plus any uploaded images.
 // Vercel deploys that commit like any other push.
 //
 // Environment variables (Vercel → Settings → Environment Variables):
@@ -78,13 +79,13 @@ async function snapshot() {
   const releases = (await gh('/contents/releases?ref=' + head)).map((f) => f.path);
   return { head, tree, posts, pages, releases };
 }
-async function commit(snap, posts, image, message) {
+async function commit(snap, posts, images, message) {
   const files = build(posts, snap.pages);
   files[DATA] = JSON.stringify(posts, null, 2) + '\n';
   const entries = Object.keys(files).map((path) => ({ path, mode: '100644', type: 'blob', content: files[path] }));
   snap.releases.filter((p) => p.endsWith('.html') && !files[p])
     .forEach((path) => entries.push({ path, mode: '100644', type: 'blob', sha: null }));
-  if (image) {
+  for (const image of images) {
     const blob = await gh('/git/blobs', { method: 'POST', body: { content: image.base64, encoding: 'base64' } });
     entries.push({ path: image.path, mode: '100644', type: 'blob', sha: blob.sha });
   }
@@ -102,12 +103,71 @@ async function commit(snap, posts, image, message) {
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const httpUrl = (v) => { const s = str(v, 500); return /^https?:\/\/\S+$/i.test(s) ? s : ''; };
 
+// Vimeo / YouTube page or player links → the player URL the post page embeds
+function embedUrl(raw) {
+  const s = str(raw, 500);
+  let m = /^https:\/\/player\.vimeo\.com\/video\/(\d+)(?:\?(?:.*&)?h=(\w+))?/.exec(s) ||
+    /^https?:\/\/(?:www\.)?vimeo\.com\/(?:(?:showcase|channels)\/\w+\/(?:video\/)?)?(\d+)(?:\/(\w+))?/.exec(s);
+  if (m) return 'https://player.vimeo.com/video/' + m[1] + (m[2] ? '?h=' + m[2] : '');
+  m = /^https?:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/|youtube-nocookie\.com\/embed\/)([\w-]{11})/.exec(s);
+  return m ? 'https://www.youtube-nocookie.com/embed/' + m[1] : '';
+}
+
 function slugify(title, date, taken) {
   const base = title.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-')
     .replace(/^-|-$/g, '').slice(0, 70).replace(/-$/, '') || 'post-' + date;
   let slug = base;
   for (let n = 2; taken.has(slug); n++) slug = base + '-' + n;
   return slug;
+}
+
+// Body blocks from the editor (see scripts/build-releases.js for the format). Plain paragraphs are
+// stored as strings, like the hand-written posts. New images arrive as { type: 'image', upload: dataURL }.
+function cleanRuns(runs) {
+  const out = [];
+  (Array.isArray(runs) ? runs : []).slice(0, 500).forEach((r) => {
+    if (!r || typeof r.text !== 'string' || !r.text) return;
+    const run = { text: r.text.slice(0, 10000) };
+    if (r.b) run.b = true;
+    if (r.i) run.i = true;
+    const href = typeof r.href === 'string' ? r.href.trim() : '';
+    if (/^(https?:\/\/|mailto:)\S+$/i.test(href)) run.href = href.slice(0, 500);
+    const last = out[out.length - 1];
+    if (last && !last.b === !run.b && !last.i === !run.i && last.href === run.href) last.text += run.text;
+    else out.push(run);
+  });
+  // trim the ends; drop blocks that are only whitespace
+  if (out.length) {
+    out[0].text = out[0].text.replace(/^\s+/, '');
+    out[out.length - 1].text = out[out.length - 1].text.replace(/\s+$/, '');
+  }
+  return out.filter((r) => r.text);
+}
+const plain = (runs) => runs.length === 1 && !runs[0].b && !runs[0].i && !runs[0].href && !/\n/.test(runs[0].text);
+
+function cleanBody(body) {
+  const out = [];
+  (Array.isArray(body) ? body : []).slice(0, 300).forEach((b) => {
+    if (typeof b === 'string') { if (b.trim()) out.push(b.trim().slice(0, 10000)); return; }
+    if (!b || typeof b !== 'object') return;
+    if (b.type === 'image') {
+      const img = { type: 'image', src: '', alt: str(b.alt, 300), caption: str(b.caption, 300) };
+      if (b.upload) img.upload = String(b.upload);
+      else if (/^assets\/img\/[\w\/.-]+\.(jpe?g|png|webp|gif)$/i.test(b.src || '') && !/\.\./.test(b.src)) img.src = b.src;
+      else return;
+      if (!img.caption) delete img.caption;
+      out.push(img);
+    } else if (b.type === 'ul' || b.type === 'ol') {
+      const items = (Array.isArray(b.items) ? b.items : []).slice(0, 200).map(cleanRuns).filter((r) => r.length);
+      if (items.length) out.push({ type: b.type, items });
+    } else {
+      const runs = cleanRuns(b.runs);
+      if (!runs.length) return;
+      const type = ['h2', 'h3', 'quote'].indexOf(b.type) !== -1 ? b.type : 'p';
+      out.push(type === 'p' && plain(runs) ? runs[0].text : { type, runs });
+    }
+  });
+  return out;
 }
 
 // Builds the stored post from the editor's fields; fields the editor doesn't show (videos, links,
@@ -118,7 +178,7 @@ function cleanPost(input, existing, taken) {
   post.category = CATEGORIES.indexOf(input.category) !== -1 ? input.category : 'Newsletter';
   post.date = /^\d{4}-\d{2}-\d{2}$/.test(input.date) && !isNaN(Date.parse(input.date)) ? input.date : '';
   post.excerpt = str(input.excerpt, 400);
-  post.body = (Array.isArray(input.body) ? input.body : []).map((p) => str(p, 5000)).filter(Boolean);
+  post.body = cleanBody(input.body);
   if (!post.title || !post.date || !post.excerpt || !post.body.length) throw fail(400, 'Title, date, summary and body are required.');
   const [y, mo, d] = post.date.split('-').map(Number);
   post.dateLabel = str(input.dateLabel, 40) || MONTHS[mo - 1] + ' ' + d + ', ' + y;
@@ -128,27 +188,57 @@ function cleanPost(input, existing, taken) {
 
   const src = input.source || {};
   if (httpUrl(src.url)) {
-    post.source = { name: str(src.name, 100) || new URL(src.url).hostname.replace(/^www\./, ''), url: httpUrl(src.url) };
-    if (existing && existing.source && existing.source.cta && existing.source.url === post.source.url) post.source.cta = existing.source.cta;
+    const prev = (existing && existing.source) || {};
+    post.source = { name: str(src.name, 100) || new URL(src.url).hostname.replace(/^www\./, '') };
+    // a custom button label ("Watch the series on Vimeo") stays while the link does
+    if (prev.cta && prev.url === httpUrl(src.url)) post.source.cta = prev.cta;
+    post.source.url = httpUrl(src.url);
   } else delete post.source;
+  if (Array.isArray(input.links)) {
+    const links = input.links.slice(0, 20).map((l) => {
+      const url = httpUrl(l && l.url);
+      if (!url) throw fail(400, 'Each link needs a web address starting with https:// (“' + str(l && l.label, 60) + '”).');
+      return { label: str(l.label, 200) || new URL(url).hostname.replace(/^www\./, ''), url };
+    });
+    if (links.length) post.links = links;
+    else delete post.links;
+  }
+  if (Array.isArray(input.videos)) {
+    const old = (existing && existing.videos) || [];
+    const videos = input.videos.slice(0, 12).map((v) => {
+      const embed = embedUrl(v && (v.url || v.embed));
+      if (!embed) throw fail(400, 'Videos must be Vimeo or YouTube links (“' + str(v && v.title, 60) + '”).');
+      const prev = old.find((o) => o.embed === embed) || {};
+      const video = { title: str(v.title, 200) || prev.title || 'Video' };
+      const duration = str(v.duration, 10);
+      if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(duration)) video.duration = duration;
+      if (prev.uploaded) video.uploaded = prev.uploaded;
+      video.embed = embed;
+      if (prev.thumbnail) video.thumbnail = prev.thumbnail;
+      return video;
+    });
+    if (videos.length) post.videos = videos;
+    else delete post.videos;
+  }
   const q = input.quote || {};
   if (str(q.text, 1000)) post.quote = { text: str(q.text, 1000), cite: str(q.cite, 200) };
   else delete post.quote;
 
-  // key order as in the hand-written posts, so diffs stay readable
+  // keep an existing post's key order (and the usual order for new ones), so diffs stay readable
   const order = ['slug', 'category', 'date', 'dateLabel', 'title', 'excerpt', 'image', 'imageAlt', 'imagePosition', 'body', 'quote', 'source', 'links', 'videos'];
   const sorted = {};
-  order.concat(Object.keys(post)).forEach((k) => { if (post[k] !== undefined && !(k in sorted)) sorted[k] = post[k]; });
+  Object.keys(existing || {}).concat(order, Object.keys(post))
+    .forEach((k) => { if (post[k] !== undefined && !(k in sorted)) sorted[k] = post[k]; });
   return sorted;
 }
 
-function decodeImage(dataUrl, slug) {
+function decodeImage(dataUrl, slug, n) {
   if (!dataUrl) return null;
   const m = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/.exec(String(dataUrl));
   if (!m) throw fail(400, 'Images must be JPEG, PNG or WebP.');
   if (m[2].length > 4 * 1024 * 1024) throw fail(413, 'That image is too large. Try one under 3 MB.');
   const ext = m[1] === 'jpeg' ? 'jpg' : m[1];
-  return { base64: m[2], path: 'assets/img/releases/' + slug + '-' + Date.now().toString(36) + '.' + ext };
+  return { base64: m[2], path: 'assets/img/releases/' + slug + '-' + Date.now().toString(36) + n + '.' + ext };
 }
 
 // ---------- Handler ----------
@@ -166,7 +256,7 @@ module.exports = async (req, res) => {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const snap = await snapshot();
     let posts = snap.posts.slice();
-    let image = null;
+    const images = [];
     let message;
 
     if (body.action === 'delete') {
@@ -179,8 +269,21 @@ module.exports = async (req, res) => {
       const existing = input.slug ? posts.find((p) => p.slug === input.slug) : null;
       if (input.slug && !existing) throw fail(404, 'That post no longer exists.');
       const post = cleanPost(input, existing, new Set(posts.map((p) => p.slug)));
-      image = decodeImage(body.image, post.slug);
-      if (image) post.image = image.path;
+      const cover = decodeImage(body.image, post.slug, 'c');
+      if (cover) { images.push(cover); post.image = cover.path; }
+      post.body.forEach((b, i) => {
+        if (b.type !== 'image' || !b.upload) return;
+        const img = decodeImage(b.upload, post.slug, i);
+        images.push(img);
+        b.src = img.path;
+        delete b.upload;
+      });
+      // no cover picked: use the first picture in the body
+      const firstPicture = post.body.find((b) => b.type === 'image');
+      if (post.image === FALLBACK_IMAGE && firstPicture) {
+        post.image = firstPicture.src;
+        if (!post.imageAlt) post.imageAlt = firstPicture.alt;
+      }
       posts = existing ? posts.map((p) => (p === existing ? post : p)) : posts.concat(post);
       // newest first; posts with the same date keep their order
       posts = posts.map((p, i) => [p, i]).sort((a, b) => (b[0].date > a[0].date) - (b[0].date < a[0].date) || a[1] - b[1]).map((x) => x[0]);
@@ -189,7 +292,7 @@ module.exports = async (req, res) => {
       throw fail(400, 'Unknown action.');
     }
 
-    await commit(snap, posts, image, message + '\n\nEdited by ' + email + ' on the site admin page.');
+    await commit(snap, posts, images, message + '\n\nEdited by ' + email + ' on the site admin page.');
     return res.status(200).json({ ok: true, posts });
   } catch (e) {
     const status = e.status || 500;

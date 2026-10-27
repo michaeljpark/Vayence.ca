@@ -6,7 +6,11 @@
 //   - index.html, releases.html   the lists between <!-- build:... --> and <!-- /build -->
 //   - sitemap.xml
 // Post fields: slug, category ('Awards' | 'Updates' | 'Newsletter'), date (YYYY-MM-DD), dateLabel,
-//   title, excerpt, body [paragraphs], image, imageAlt, imagePosition?
+//   title, excerpt, body [blocks], image, imageAlt, imagePosition?
+//   A body block is a plain paragraph string, or one of
+//     { type: 'p' | 'h2' | 'h3' | 'quote', runs }   { type: 'ul' | 'ol', items: [runs] }
+//     { type: 'image', src, alt, caption }
+//   where runs = [{ text, b?, i?, href? }] (bold, italic, link)
 //   Optional: source {name, url, cta?}, links [{label, url}], quote {text, cite},
 //   videos [{title, embed, duration, uploaded, thumbnail}]
 const fs = require('fs');
@@ -28,6 +32,32 @@ const when = (p) => esc(p.dateLabel || '');
 const img = (p, attrs) =>
   '<img src="' + p.image + '" alt="' + esc(p.imageAlt || '') + '"' + (attrs || '') +
   (p.imagePosition ? ' style="object-position:' + esc(p.imagePosition) + '"' : '') + '>';
+// ---------- Post body (written in the admin editor) ----------
+const SAFE_HREF = /^(https?:\/\/|mailto:)\S+$/i;
+const SAFE_SRC = /^assets\/img\/[\w\/.-]+\.(jpe?g|png|webp|gif)$/i;
+const runsHtml = (runs) => (Array.isArray(runs) ? runs : []).map((r) => {
+  let h = esc(r.text).replace(/\n/g, '<br>');
+  if (r.b) h = '<strong>' + h + '</strong>';
+  if (r.i) h = '<em>' + h + '</em>';
+  if (r.href && SAFE_HREF.test(r.href)) {
+    h = '<a href="' + esc(r.href) + '"' + (/^https?:/i.test(r.href) ? ' target="_blank" rel="noopener"' : '') + '>' + h + '</a>';
+  }
+  return h;
+}).join('');
+function blockHtml(b) {
+  if (typeof b === 'string') return '<p>' + esc(b) + '</p>';
+  switch (b.type) {
+    case 'h2': case 'h3': return '<' + b.type + '>' + runsHtml(b.runs) + '</' + b.type + '>';
+    case 'ul': case 'ol': return '<' + b.type + '>' + (b.items || []).map((it) => '<li>' + runsHtml(it) + '</li>').join('') + '</' + b.type + '>';
+    case 'quote': return '<blockquote class="post-quote">' + runsHtml(b.runs) + '</blockquote>';
+    case 'image':
+      if (!SAFE_SRC.test(b.src || '') || /\.\./.test(b.src)) return '';
+      return '<figure class="post-figure"><img src="' + esc(b.src) + '" alt="' + esc(b.alt || '') + '" loading="lazy">' +
+        (b.caption ? '<figcaption>' + esc(b.caption) + '</figcaption>' : '') + '</figure>';
+    default: return '<p>' + runsHtml(b.runs) + '</p>';
+  }
+}
+
 const arrowLink = (url, label) =>
   '<li><a class="text-link" href="' + url + '" target="_blank" rel="noopener">' + esc(label) + '<img src="assets/icons/arrow-ink.svg" width="16" height="16" alt=""></a></li>';
 
@@ -59,12 +89,13 @@ const postView = (post, others) =>
   '</header>' +
   '<figure class="post-view__media">' + img(post, ' fetchpriority="high"') + '</figure>' +
   '<div class="post-view__body">' +
-    post.body.map((para) => '<p>' + esc(para) + '</p>').join('') +
+    post.body.map(blockHtml).join('') +
     (post.quote ? '<figure class="quote"><blockquote class="quote__text">' + esc(post.quote.text) + '</blockquote>' +
       '<figcaption class="small quote__cite">' + esc(post.quote.cite) + '</figcaption></figure>' : '') +
   '</div>' +
   (post.videos ? '<div class="post-videos">' + post.videos.map((v) =>
-    '<figure class="post-video"><div class="post-video__frame"><iframe src="' + v.embed + '&amp;title=0&amp;byline=0&amp;portrait=0" title="' + esc(v.title) + '" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>' +
+    '<figure class="post-video"><div class="post-video__frame"><iframe src="' + esc(v.embed) + (v.embed.indexOf('?') === -1 ? '?' : '&amp;') +
+      (/vimeo\.com/.test(v.embed) ? 'title=0&amp;byline=0&amp;portrait=0' : 'rel=0') + '" title="' + esc(v.title) + '" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>' +
       '<figcaption><span>' + esc(v.title) + '</span><span class="muted">' + esc(v.duration || '') + '</span></figcaption></figure>'
   ).join('') + '</div>' : '') +
   ((post.source || post.links) ? '<ul class="post-sources">' +
