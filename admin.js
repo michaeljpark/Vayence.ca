@@ -75,6 +75,7 @@
     if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
     admin.hidden = true;
     form.hidden = true;
+    settings.hidden = true;
     signin.hidden = false;
     signinStatus.textContent = message || '';
     startGoogle();
@@ -315,6 +316,70 @@
       .then(function (data) { saved(data, key, 'Deleted “' + title + '”. The site updates in about a minute.'); })
       .catch(function (err) { editorStatus.textContent = err.message; })
       .then(function () { busy(false); });
+  });
+
+  // ---------- Page text (assets/data/site.json) ----------
+  var settings = $('[data-settings]');
+  var settingsStatus = $('[data-settings-status]');
+  var SECTIONS = ['Awards', 'Updates', 'Newsletter'];
+  $('[data-sections]').innerHTML = '<legend class="field__label">Releases sections</legend>' + SECTIONS.map(function (c) {
+    return '<div class="form__row">' +
+      '<label class="field"><span class="field__label">' + c + ' heading</span>' +
+        '<input class="field__box" type="text" name="heading-' + c + '" maxlength="120" required></label>' +
+      '<label class="field"><span class="field__label">' + c + ' <span class="muted">— text when there are no posts</span></span>' +
+        '<input class="field__box" type="text" name="empty-' + c + '" maxlength="200" required></label>' +
+    '</div>';
+  }).join('');
+
+  function openSettings() {
+    var s = config.site;
+    var f = settings.elements;
+    f.title.value = s.releases.title;
+    f.lead.value = s.releases.lead;
+    f.leadMuted.value = s.releases.leadMuted || '';
+    SECTIONS.forEach(function (c) {
+      var sec = s.releases.sections[c] || {};
+      f['heading-' + c].value = sec.heading || '';
+      f['empty-' + c].value = sec.empty || '';
+    });
+    f.roles.value = (s.contact.roles || []).join('\n');
+    settingsStatus.textContent = '';
+    Array.prototype.slice.call(settings.querySelectorAll('.is-invalid')).forEach(function (el) { el.classList.remove('is-invalid'); });
+    admin.hidden = true;
+    settings.hidden = false;
+    settings.scrollIntoView({ behavior: 'instant', block: 'start' });
+  }
+  function closeSettings() {
+    settings.hidden = true;
+    admin.hidden = false;
+  }
+  $('[data-open-settings]').addEventListener('click', openSettings);
+  $('[data-settings-cancel]').addEventListener('click', closeSettings);
+
+  settings.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var f = settings.elements;
+    var required = [f.title, f.lead, f.roles].concat(SECTIONS.reduce(function (all, c) { return all.concat(f['heading-' + c], f['empty-' + c]); }, []));
+    var invalid = required.filter(function (el) { return !el.value.trim(); });
+    required.forEach(function (el) { el.classList.toggle('is-invalid', invalid.indexOf(el) !== -1); });
+    if (invalid.length) { settingsStatus.textContent = 'Please fill in every field (the grey intro is optional).'; invalid[0].focus(); return; }
+    var site = {
+      releases: { title: f.title.value, lead: f.lead.value, leadMuted: f.leadMuted.value, sections: {} },
+      contact: { roles: f.roles.value.split('\n').map(function (r) { return r.trim(); }).filter(Boolean) }
+    };
+    SECTIONS.forEach(function (c) { site.releases.sections[c] = { heading: f['heading-' + c].value, empty: f['empty-' + c].value }; });
+    var controls = Array.prototype.slice.call(settings.querySelectorAll('button, input, textarea'));
+    controls.forEach(function (el) { el.disabled = true; });
+    settingsStatus.textContent = 'Saving…';
+    api('POST', { action: 'settings', site: site })
+      .then(function (data) {
+        config.posts = data.posts;
+        config.site = data.site;
+        closeSettings();
+        listStatus.textContent = 'Saved the page text. The site updates in about a minute.';
+      })
+      .catch(function (err) { settingsStatus.textContent = err.message; })
+      .then(function () { controls.forEach(function (el) { el.disabled = false; }); });
   });
 
   // ---------- Start ----------

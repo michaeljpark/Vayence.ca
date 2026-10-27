@@ -1,6 +1,7 @@
 // Releases admin API (Vercel function), used by admin.html.
-//   GET  /api/posts                      → { clientId, admin, posts }   (public)
+//   GET  /api/posts                      → { clientId, admin, posts, site }   (public)
 //   POST /api/posts { action: 'save', post, image? } | { action: 'delete', slug }
+//                 | { action: 'settings', site }   (page text: Releases headings, contact "I am a" options)
 //        (image is a new cover as a data URL; new images inside the body come as body blocks)
 // Writes need a Google ID token for ADMIN_EMAIL. Each change is a single commit to GitHub:
 // posts.json, the regenerated release pages, lists and sitemap, plus any uploaded images.
@@ -19,6 +20,7 @@ const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const REPO = process.env.GITHUB_REPO || 'michaeljpark/Vayence.ca';
 const BRANCH = process.env.GITHUB_BRANCH || 'main';
 const DATA = 'assets/data/posts.json';
+const SITE_DATA = 'assets/data/site.json';
 const CATEGORIES = ['Awards', 'Updates', 'Newsletter'];
 const FALLBACK_IMAGE = 'assets/img/og-image.jpg';
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -74,14 +76,16 @@ async function snapshot() {
   const head = (await gh('/git/ref/heads/' + BRANCH)).object.sha;
   const tree = (await gh('/git/commits/' + head)).tree.sha;
   const posts = JSON.parse(await readFile(DATA, head));
+  const site = JSON.parse(await readFile(SITE_DATA, head));
   const pages = {};
   for (const f of LIST_PAGES) pages[f] = await readFile(f, head);
   const releases = (await gh('/contents/releases?ref=' + head)).map((f) => f.path);
-  return { head, tree, posts, pages, releases };
+  return { head, tree, posts, site, pages, releases };
 }
-async function commit(snap, posts, images, message) {
-  const files = build(posts, snap.pages);
+async function commit(snap, posts, site, images, message) {
+  const files = build(posts, snap.pages, site);
   files[DATA] = JSON.stringify(posts, null, 2) + '\n';
+  files[SITE_DATA] = JSON.stringify(site, null, 2) + '\n';
   const entries = Object.keys(files).map((path) => ({ path, mode: '100644', type: 'blob', content: files[path] }));
   snap.releases.filter((p) => p.endsWith('.html') && !files[p])
     .forEach((path) => entries.push({ path, mode: '100644', type: 'blob', sha: null }));
@@ -241,6 +245,28 @@ function decodeImage(dataUrl, slug, n) {
   return { base64: m[2], path: 'assets/img/releases/' + slug + '-' + Date.now().toString(36) + n + '.' + ext };
 }
 
+// Page text from the admin's "Page text" panel; every field but the grey half of the intro is
+// required, so no heading can go blank
+function cleanSite(input, current) {
+  const site = JSON.parse(JSON.stringify(current));
+  const r = (input && input.releases) || {};
+  const need = (v, max, label) => { const s = str(v, max); if (!s) throw fail(400, label + ' can’t be empty.'); return s; };
+  site.releases.title = need(r.title, 60, 'The page title');
+  site.releases.lead = need(r.lead, 200, 'The intro');
+  site.releases.leadMuted = str(r.leadMuted, 300);
+  CATEGORIES.forEach((c) => {
+    const sec = (r.sections && r.sections[c]) || {};
+    site.releases.sections[c] = {
+      heading: need(sec.heading, 120, 'The ' + c + ' heading'),
+      empty: need(sec.empty, 200, 'The ' + c + ' “no posts” text')
+    };
+  });
+  const roles = ((input && input.contact && input.contact.roles) || []).map((x) => str(x, 80)).filter(Boolean).slice(0, 15);
+  if (!roles.length) throw fail(400, 'Add at least one “I am a” option.');
+  site.contact = Object.assign({}, site.contact, { roles });
+  return site;
+}
+
 // ---------- Handler ----------
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -250,7 +276,7 @@ module.exports = async (req, res) => {
     if (missing.length) throw fail(500, 'The site is missing these settings: ' + missing.join(', ') + '.');
     if (req.method === 'GET') {
       const snap = await snapshot();
-      return res.status(200).json({ clientId: CLIENT_ID, admin: ADMIN_EMAIL, posts: snap.posts });
+      return res.status(200).json({ clientId: CLIENT_ID, admin: ADMIN_EMAIL, posts: snap.posts, site: snap.site });
     }
     if (req.method !== 'POST') throw fail(405, 'Method not allowed.');
 
@@ -258,6 +284,7 @@ module.exports = async (req, res) => {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const snap = await snapshot();
     let posts = snap.posts.slice();
+    let site = snap.site;
     const images = [];
     let message;
 
@@ -290,12 +317,15 @@ module.exports = async (req, res) => {
       // newest first; posts with the same date keep their order
       posts = posts.map((p, i) => [p, i]).sort((a, b) => (b[0].date > a[0].date) - (b[0].date < a[0].date) || a[1] - b[1]).map((x) => x[0]);
       message = 'Releases: ' + (existing ? 'update' : 'add') + ' “' + post.title + '”';
+    } else if (body.action === 'settings') {
+      site = cleanSite(body.site, snap.site);
+      message = 'Site text: update Releases page and contact options';
     } else {
       throw fail(400, 'Unknown action.');
     }
 
-    await commit(snap, posts, images, message + '\n\nEdited by ' + email + ' on the site admin page.');
-    return res.status(200).json({ ok: true, posts });
+    await commit(snap, posts, site, images, message + '\n\nEdited by ' + email + ' on the site admin page.');
+    return res.status(200).json({ ok: true, posts, site });
   } catch (e) {
     const status = e.status || 500;
     if (status >= 500) console.error(e);

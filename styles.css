@@ -975,6 +975,10 @@ main { display: flex; flex-direction: column; gap: var(--gap); }
 .admin-editor__preview img { width: 100%; height: 100%; object-fit: cover; }
 .admin-editor__file { height: auto; padding: 12px 14px; }
 .admin-editor__side .admin__link--danger { align-self: flex-start; font-size: 14px; }
+.admin-settings { max-width: 880px; scroll-margin-top: 120px; }
+.admin-settings .admin-editor__back { align-self: flex-start; }
+.admin-settings__group { display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: 0; padding: 24px 0 8px; border: 0; border-top: 1px solid var(--line); }
+.admin-settings__group legend { float: left; width: 100%; margin-bottom: 4px; font-weight: 500; color: var(--ink); }
 
 /* the document: toolbar stuck under the header, page styled as the post body */
 .doc { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--bg); }

@@ -49,12 +49,52 @@
                   <option value="">All posts</option>
                 </select>
               </label>
+              <button class="btn btn--secondary" type="button" data-open-settings>Page text</button>
               <button class="btn btn--primary" type="button" data-new>New post</button>
             </div>
           </div>
           <div class="post-list" data-admin-list></div>
           <p class="small form__status" data-list-status role="status" aria-live="polite"></p>
         </div>
+
+        <!-- Page text: Releases page headings and the contact form's options (assets/data/site.json) -->
+        <form class="form admin-settings" data-settings novalidate hidden>
+          <button class="admin__link admin-editor__back" type="button" data-settings-cancel>← Back to posts</button>
+          <h2 class="h3">Page text</h2>
+
+          <fieldset class="admin-settings__group">
+            <legend class="field__label">Releases page</legend>
+            <label class="field">
+              <span class="field__label">Page title</span>
+              <input class="field__box" type="text" name="title" maxlength="60" required>
+            </label>
+            <div class="form__row">
+              <label class="field">
+                <span class="field__label">Intro <span class="muted">— dark part</span></span>
+                <input class="field__box" type="text" name="lead" maxlength="200" required>
+              </label>
+              <label class="field">
+                <span class="field__label">Intro <span class="muted">— grey part, optional</span></span>
+                <input class="field__box" type="text" name="leadMuted" maxlength="300">
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="admin-settings__group" data-sections></fieldset>
+
+          <fieldset class="admin-settings__group">
+            <legend class="field__label">Contact form</legend>
+            <label class="field">
+              <span class="field__label">“I am a” options <span class="muted">— one per line, in order</span></span>
+              <textarea class="field__box field__box--area" name="roles" rows="6" required></textarea>
+            </label>
+          </fieldset>
+
+          <div class="form__submit">
+            <button class="btn btn--primary" type="submit" data-settings-save>Save page text</button>
+            <p class="small form__status" data-settings-status role="status" aria-live="polite"></p>
+          </div>
+        </form>
 
         <!-- Editor: the document on the left, post settings on the right -->
         <form class="admin-editor" data-editor novalidate hidden>

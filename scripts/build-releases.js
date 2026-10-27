@@ -1,10 +1,13 @@
-// Builds the static release pages from assets/data/posts.json (newest first).
+// Builds the static release pages from assets/data/posts.json (newest first) and fills in the
+// editable page text from assets/data/site.json.
 // The admin page (admin.html → api/posts.js) runs this on every save; after editing the JSON by hand run:
 //   node scripts/build-releases.js
 // It writes:
 //   - releases/<slug>.html   one crawlable page per release, with its own metadata
-//   - index.html, releases.html   the lists between <!-- build:... --> and <!-- /build -->
+//   - index.html, releases.html, about.html   whatever sits between <!-- build:... --> and <!-- /build -->
 //   - sitemap.xml
+// site.json: releases { title, lead, leadMuted, sections { Awards|Updates|Newsletter: { heading, empty } } },
+//   contact { roles [the "I am a" options] }
 // Post fields: slug, category ('Awards' | 'Updates' | 'Newsletter'), date (YYYY-MM-DD), dateLabel,
 //   title, excerpt, body [blocks], image, imageAlt, imagePosition?
 //   A body block is a plain paragraph string, or one of
@@ -17,7 +20,7 @@ const fs = require('fs');
 const path = require('path');
 
 const SITE = 'https://www.vayence.ca/';
-const LIST_PAGES = ['index.html', 'releases.html'];
+const LIST_PAGES = ['index.html', 'releases.html', 'about.html'];
 
 // ---------- Markup (shared by the lists and the post pages) ----------
 const ICONS = {
@@ -204,15 +207,26 @@ function postPage(post, others) {
 `;
 }
 
-// <!-- build:cards 3 -->  latest N cards      <!-- build:list Awards -->  rows for one category
-function fillLists(src, POSTS) {
+// <!-- build:cards 3 -->        the latest N cards
+// <!-- build:list Awards -->    rows for one category (or its "empty" text from site.json)
+// <!-- build:text a.b.c -->     a string from site.json
+// <!-- build:roles -->          the contact form's "I am a" options
+const lookup = (obj, key) => key.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
+function fillLists(src, POSTS, site) {
   if (!/<!-- build:/.test(src)) throw new Error('No build markers found');
-  return src.replace(/(<!-- build:(cards|list) ([^ ]+?)(?: "([^"]*)")? -->)[\s\S]*?(<!-- \/build -->)/g, (m, open, kind, arg, empty, close) => {
+  return src.replace(/(<!-- build:(cards|list|text|roles)(?: ([^ ]+?))? -->)[\s\S]*?(<!-- \/build -->)/g, (m, open, kind, arg, close) => {
     let html;
     if (kind === 'cards') html = POSTS.slice(0, parseInt(arg, 10)).map(postCard).join('');
-    else {
+    else if (kind === 'list') {
       const items = POSTS.filter((p) => p.category === arg);
-      html = items.length ? items.map(postRow).join('') : '<p class="post-list__empty">' + esc(empty || 'Nothing here yet.') + '</p>';
+      const empty = lookup(site, 'releases.sections.' + arg + '.empty') || 'Nothing here yet.';
+      html = items.length ? items.map(postRow).join('') : '<p class="post-list__empty">' + esc(empty) + '</p>';
+    } else if (kind === 'text') {
+      const value = lookup(site, arg);
+      if (typeof value !== 'string') throw new Error('site.json has no text for ' + arg);
+      html = esc(value);
+    } else {
+      html = (lookup(site, 'contact.roles') || []).map((r) => '<option>' + esc(r) + '</option>').join('');
     }
     return open + html + close;
   });
@@ -228,14 +242,14 @@ function sitemap(POSTS) {
     '\n</urlset>\n';
 }
 
-// posts: the release list; pages: current { 'index.html': html, 'releases.html': html }.
+// posts: the release list; pages: the current html of LIST_PAGES; site: site.json.
 // Returns every generated file as { path: content }; release pages not in it are stale.
-function build(posts, pages) {
+function build(posts, pages, site) {
   const files = {};
   posts.forEach((post) => {
     files[href(post)] = postPage(post, posts.filter((p) => p !== post).slice(0, 3));
   });
-  LIST_PAGES.forEach((f) => { files[f] = fillLists(pages[f], posts); });
+  LIST_PAGES.forEach((f) => { files[f] = fillLists(pages[f], posts, site); });
   files['sitemap.xml'] = sitemap(posts);
   return files;
 }
@@ -246,9 +260,10 @@ if (require.main === module) {
   const ROOT = path.join(__dirname, '..');
   const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
   const posts = JSON.parse(read('assets/data/posts.json'));
+  const site = JSON.parse(read('assets/data/site.json'));
   const pages = {};
   LIST_PAGES.forEach((f) => { pages[f] = read(f); });
-  const files = build(posts, pages);
+  const files = build(posts, pages, site);
   fs.mkdirSync(path.join(ROOT, 'releases'), { recursive: true });
   Object.keys(files).forEach((f) => fs.writeFileSync(path.join(ROOT, f), files[f]));
   // drop pages for posts that were removed

@@ -1,0 +1,30 @@
+{
+  "releases": {
+    "title": "Releases",
+    "lead": "Awards, updates and newsletters",
+    "leadMuted": "from Vayence Inc and the ProActive project.",
+    "sections": {
+      "Awards": {
+        "heading": "Recognition for ProActive",
+        "empty": "Nothing here yet."
+      },
+      "Updates": {
+        "heading": "Product and company news",
+        "empty": "Nothing here yet."
+      },
+      "Newsletter": {
+        "heading": "Newsletter",
+        "empty": "No issues yet. Subscribe to get the first one by email."
+      }
+    }
+  },
+  "contact": {
+    "roles": [
+      "Caregiver or family member",
+      "Clinician",
+      "Educator",
+      "Potential partner",
+      "Other"
+    ]
+  }
+}
