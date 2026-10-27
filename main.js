@@ -1,5 +1,6 @@
 (function () {
   var CONTACT_EMAIL = 'theproactiveproject@gmail.com';
+  var SITE_URL = 'https://www.vayence.ca/';
   var page = document.body.getAttribute('data-page') || 'home';
 
   // ---------- Icons (Lucide, inlined so they take currentColor) ----------
@@ -227,13 +228,52 @@
       : '<p class="post-list__empty">' + esc(el.getAttribute('data-empty') || 'Nothing here yet.') + '</p>';
   });
 
+  // one page serves the list and every post, so the canonical URL and metadata are set here
+  function setMeta(attr, key, value) {
+    var el = document.head.querySelector('meta[' + attr + '="' + key + '"]');
+    if (!el) { el = document.createElement('meta'); el.setAttribute(attr, key); document.head.appendChild(el); }
+    el.setAttribute('content', value);
+  }
+  function setCanonical(url) {
+    var link = document.createElement('link');
+    link.rel = 'canonical';
+    link.href = url;
+    document.head.appendChild(link);
+    setMeta('property', 'og:url', url);
+  }
+
   var single = document.querySelector('[data-releases]');
   if (single) {
     var slug = new URLSearchParams(window.location.search).get('post');
     var post = slug && POSTS.filter(function (p) { return p.slug === slug; })[0];
+    setCanonical(SITE_URL + 'releases.html' + (post ? '?post=' + encodeURIComponent(post.slug) : ''));
     if (post) {
       var view = single.querySelector('.post-view');
       document.title = post.title + ' — Vayence Inc';
+      setMeta('name', 'description', post.excerpt);
+      setMeta('property', 'og:type', 'article');
+      setMeta('property', 'og:title', post.title);
+      setMeta('property', 'og:description', post.excerpt);
+      setMeta('property', 'og:image', SITE_URL + post.image);
+      setMeta('property', 'og:image:alt', post.imageAlt || '');
+      var ld = document.createElement('script');
+      ld.type = 'application/ld+json';
+      ld.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'NewsArticle',
+        headline: post.title,
+        description: post.excerpt,
+        image: [SITE_URL + post.image],
+        datePublished: post.date,
+        mainEntityOfPage: SITE_URL + 'releases.html?post=' + encodeURIComponent(post.slug),
+        author: { '@type': 'Organization', name: 'Vayence Inc', url: SITE_URL },
+        publisher: { '@type': 'Organization', name: 'Vayence Inc', logo: { '@type': 'ImageObject', url: SITE_URL + 'assets/img/icon-512.png' } }
+      });
+      document.head.appendChild(ld);
+      ['og:image:width', 'og:image:height'].forEach(function (k) {
+        var m = document.head.querySelector('meta[property="' + k + '"]');
+        if (m) m.remove();
+      });
       Array.prototype.slice.call(document.querySelectorAll('[data-releases-head]')).forEach(function (h) { h.hidden = true; });
       single.hidden = false;
       var others = POSTS.filter(function (p) { return p !== post; }).slice(0, 3);

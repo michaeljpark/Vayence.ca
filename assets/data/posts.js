@@ -1,5 +1,6 @@
 /* Releases shown on the home page and releases.html, newest first.
    Add a post by adding an object here; `slug` becomes releases.html?post=<slug>.
+   Also add that URL to sitemap.xml so search engines find it.
    category: 'Awards' | 'Updates' | 'Newsletter'
    Optional: source {name, url}, links [{label, url}], videos [{title, embed, duration}], quote {text, cite}. */
 window.VAYENCE_POSTS = [
