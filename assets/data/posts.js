@@ -1,8 +1,9 @@
 /* Releases shown on the home page and releases.html, newest first.
-   Add a post by adding an object here; `slug` becomes releases.html?post=<slug>.
-   Also add that URL to sitemap.xml so search engines find it.
+   Add a post by adding an object here, then run `node scripts/build-releases.js`:
+   it writes releases/<slug>.html, fills the lists in index.html and releases.html, and updates sitemap.xml.
    category: 'Awards' | 'Updates' | 'Newsletter'
-   Optional: source {name, url}, links [{label, url}], videos [{title, embed, duration}], quote {text, cite}. */
+   Optional: source {name, url}, links [{label, url}], quote {text, cite},
+   videos [{title, embed, duration, uploaded, thumbnail}]. */
 window.VAYENCE_POSTS = [
   {
     slug: 'james-dyson-award-2026-canada',
@@ -11,7 +12,7 @@ window.VAYENCE_POSTS = [
     dateLabel: 'September 23, 2026',
     title: 'ProActive named Canada’s national winner of the 2026 James Dyson Award',
     excerpt: 'Marzuq Vohra and Vienna Doria-Pighin’s smart vest takes the Canadian title and advances to the international stage.',
-    image: 'assets/img/cohort-event.png',
+    image: 'assets/img/cohort-event.jpg',
     imageAlt: 'Vayence Inc founders Marzuq Vohra and Vienna Doria-Pighin',
     body: [
       'ProActive, the smart wearable vest developed by Vayence Inc founders Marzuq Vohra and Vienna Doria-Pighin, has been named Canada’s national winner of the 2026 James Dyson Award.',
@@ -96,9 +97,12 @@ window.VAYENCE_POSTS = [
       'The films cover the design challenge behind the vest, how OCAD U made the project possible, and a demonstration of the prototype.'
     ],
     videos: [
-      { title: 'The Design Challenge', duration: '2:09', embed: 'https://player.vimeo.com/video/1113280882?h=d5bf0ddea3' },
-      { title: 'How OCAD U made it possible', duration: '2:18', embed: 'https://player.vimeo.com/video/1113280919?h=fc971c88ad' },
-      { title: 'Product Demo', duration: '3:23', embed: 'https://player.vimeo.com/video/1113280948?h=96e9a0b056' }
+      { title: 'The Design Challenge', duration: '2:09', uploaded: '2025-08-26', embed: 'https://player.vimeo.com/video/1113280882?h=d5bf0ddea3',
+        thumbnail: 'https://i.vimeocdn.com/video/2051746717-b1f4afd762e2ae6288a4e7f953ca5e740bb5e055c5fbca6b3b6954d9146974b9-d_1280x720' },
+      { title: 'How OCAD U made it possible', duration: '2:18', uploaded: '2025-08-26', embed: 'https://player.vimeo.com/video/1113280919?h=fc971c88ad',
+        thumbnail: 'https://i.vimeocdn.com/video/2051739592-b1c11ac9c6222ff04a1ba4eef3b683b8042accec743032d26b1fcdf494eeba3d-d_1280x720' },
+      { title: 'Product Demo', duration: '3:23', uploaded: '2025-08-26', embed: 'https://player.vimeo.com/video/1113280948?h=96e9a0b056',
+        thumbnail: 'https://i.vimeocdn.com/video/2051740244-dadb207c5bc1c47e3410623b4fb5a128a1cd5676295a8dfdde3fc8394a1c3916-d_1280x720' }
     ],
     source: { name: 'Vimeo', cta: 'Watch the series on Vimeo', url: 'https://vimeo.com/showcase/11849266' }
   },

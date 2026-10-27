@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Vayence Inc — ProActive, a self-inflating vest for sensory regulation</title>
   <meta name="description" content="Developed by Vayence Inc, ProActive is a reusable, self-inflating vest for people with autism and sensory sensitivities.">
+  <meta name="robots" content="max-image-preview:large">
   <link rel="canonical" href="https://www.vayence.ca/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Vayence Inc">
@@ -151,7 +152,7 @@
 
       <!-- Recognition: photo card, awards bottom-left -->
       <section class="media-card awards-card" id="recognition" aria-label="Awards and recognition">
-        <img class="media-card__bg" src="assets/img/cohort-event.png" width="609" height="853" alt="Vayence Inc founders Marzuq Vohra and Vienna Doria-Pighin">
+        <img class="media-card__bg" src="assets/img/cohort-event.jpg" width="609" height="853" alt="Vayence Inc founders Marzuq Vohra and Vienna Doria-Pighin">
         <div class="awards-card__head">
           <span class="chip chip--glass">Recognition</span>
           <h2 class="media-card__title">Awards and recognition</h2>
@@ -181,7 +182,7 @@
         </ul>
       </section>
 
-      <!-- Releases preview (rendered from assets/data/posts.js) -->
+      <!-- Releases preview; cards are written by scripts/build-releases.js from assets/data/posts.js -->
       <section class="section section--white" id="releases">
         <div class="section__head">
           <div class="section__title">
@@ -193,7 +194,7 @@
             <img src="assets/icons/arrow-ink.svg" width="16" height="16" alt="">
           </a>
         </div>
-        <div class="posts" data-posts data-limit="3"></div>
+        <div class="posts"><!-- build:cards 3 --><a class="post-card" href="releases/james-dyson-award-2026-canada.html"><figure class="post-card__media"><img src="assets/img/cohort-event.jpg" alt="Vayence Inc founders Marzuq Vohra and Vienna Doria-Pighin" loading="lazy"></figure><div class="post-card__body"><p class="post-card__meta"><span class="tag">Awards</span><span>September 23, 2026</span></p><h3 class="post-card__title">ProActive named Canada’s national winner of the 2026 James Dyson Award</h3><p class="post-card__excerpt">Marzuq Vohra and Vienna Doria-Pighin’s smart vest takes the Canadian title and advances to the international stage.</p><span class="post-card__more">Read more<svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div></a><a class="post-card" href="releases/startupfest-2026.html"><figure class="post-card__media"><img src="assets/img/startupfest-2026.jpg" alt="Marzuq Vohra and Vienna Doria-Pighin at Startupfest 2026" loading="lazy" style="object-position:50% 20%"></figure><div class="post-card__body"><p class="post-card__meta"><span class="tag">Updates</span><span>July 2026</span></p><h3 class="post-card__title">Vayence at Startupfest 2026 in Montreal</h3><p class="post-card__excerpt">Our first conference as a company — and a place among the finalists for one of the event’s prizes.</p><span class="post-card__more">Read more<svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div></a><a class="post-card" href="releases/rbc-cead-seed-fund-2026.html"><figure class="post-card__media"><img src="assets/img/hero-visual.jpg" alt="A person zipping up the ProActive vest prototype" loading="lazy"></figure><div class="post-card__body"><p class="post-card__meta"><span class="tag">Awards</span><span>May 13, 2026</span></p><h3 class="post-card__title">Second prize in the 2026 Seed Fund for Creative Entrepreneurs</h3><p class="post-card__excerpt">Vayence Inc receives $5,000 from OCAD University’s RBC Centre for Emerging Artists &amp; Designers.</p><span class="post-card__more">Read more<svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div></a><!-- /build --></div>
         <noscript><p class="lead"><a href="releases.html">Read the latest releases</a></p></noscript>
       </section>
 
@@ -218,7 +219,6 @@
     <footer class="footer" data-site-footer></footer>
 
   </div>
-  <script src="assets/data/posts.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

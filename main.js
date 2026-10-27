@@ -1,6 +1,5 @@
 (function () {
   var CONTACT_EMAIL = 'theproactiveproject@gmail.com';
-  var SITE_URL = 'https://www.vayence.ca/';
   var page = document.body.getAttribute('data-page') || 'home';
 
   // ---------- Icons (Lucide, inlined so they take currentColor) ----------
@@ -189,123 +188,9 @@
   }
 
   // ---------- Releases ----------
-  var POSTS = window.VAYENCE_POSTS || [];
-  function when(p) { return esc(p.dateLabel || p.year || ''); }
-  function img(p, lazy) {
-    return '<img src="' + p.image + '" alt="' + esc(p.imageAlt || '') + '"' + (lazy ? ' loading="lazy"' : '') +
-      (p.imagePosition ? ' style="object-position:' + esc(p.imagePosition) + '"' : '') + '>';
-  }
-  function postCard(p) {
-    return '<a class="post-card" href="releases.html?post=' + encodeURIComponent(p.slug) + '">' +
-      '<figure class="post-card__media">' + img(p, true) + '</figure>' +
-      '<div class="post-card__body">' +
-        '<p class="post-card__meta"><span class="tag">' + esc(p.category) + '</span><span>' + when(p) + '</span></p>' +
-        '<h3 class="post-card__title">' + esc(p.title) + '</h3>' +
-        '<p class="post-card__excerpt">' + esc(p.excerpt) + '</p>' +
-        '<span class="post-card__more">Read more' + icon('arrow-right') + '</span>' +
-      '</div></a>';
-  }
-  Array.prototype.slice.call(document.querySelectorAll('[data-posts]')).forEach(function (el) {
-    var limit = parseInt(el.getAttribute('data-limit'), 10) || POSTS.length;
-    el.innerHTML = POSTS.slice(0, limit).map(postCard).join('');
-  });
-
-  // one row per release: meta | title + excerpt | thumbnail
-  function postRow(p) {
-    return '<a class="post-row" href="releases.html?post=' + encodeURIComponent(p.slug) + '">' +
-      '<p class="post-row__meta"><span class="tag">' + esc(p.category) + '</span><span>' + when(p) + '</span></p>' +
-      '<div class="post-row__text"><h2 class="post-row__title">' + esc(p.title) + '</h2>' +
-        '<p class="post-row__excerpt">' + esc(p.excerpt) + '</p></div>' +
-      '<figure class="post-row__media">' + img({ image: p.image, imagePosition: p.imagePosition }, true) + '</figure>' +
-      '</a>';
-  }
-
-  var lists = Array.prototype.slice.call(document.querySelectorAll('.post-list[data-category]'));
-  lists.forEach(function (el) {
-    var c = el.getAttribute('data-category');
-    var items = POSTS.filter(function (p) { return p.category === c; });
-    el.innerHTML = items.length ? items.map(postRow).join('')
-      : '<p class="post-list__empty">' + esc(el.getAttribute('data-empty') || 'Nothing here yet.') + '</p>';
-  });
-
-  // one page serves the list and every post, so the canonical URL and metadata are set here
-  function setMeta(attr, key, value) {
-    var el = document.head.querySelector('meta[' + attr + '="' + key + '"]');
-    if (!el) { el = document.createElement('meta'); el.setAttribute(attr, key); document.head.appendChild(el); }
-    el.setAttribute('content', value);
-  }
-  function setCanonical(url) {
-    var link = document.createElement('link');
-    link.rel = 'canonical';
-    link.href = url;
-    document.head.appendChild(link);
-    setMeta('property', 'og:url', url);
-  }
-
-  var single = document.querySelector('[data-releases]');
-  if (single) {
-    var slug = new URLSearchParams(window.location.search).get('post');
-    var post = slug && POSTS.filter(function (p) { return p.slug === slug; })[0];
-    setCanonical(SITE_URL + 'releases.html' + (post ? '?post=' + encodeURIComponent(post.slug) : ''));
-    if (post) {
-      var view = single.querySelector('.post-view');
-      document.title = post.title + ' — Vayence Inc';
-      setMeta('name', 'description', post.excerpt);
-      setMeta('property', 'og:type', 'article');
-      setMeta('property', 'og:title', post.title);
-      setMeta('property', 'og:description', post.excerpt);
-      setMeta('property', 'og:image', SITE_URL + post.image);
-      setMeta('property', 'og:image:alt', post.imageAlt || '');
-      var ld = document.createElement('script');
-      ld.type = 'application/ld+json';
-      ld.textContent = JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'NewsArticle',
-        headline: post.title,
-        description: post.excerpt,
-        image: [SITE_URL + post.image],
-        datePublished: post.date,
-        mainEntityOfPage: SITE_URL + 'releases.html?post=' + encodeURIComponent(post.slug),
-        author: { '@type': 'Organization', name: 'Vayence Inc', url: SITE_URL },
-        publisher: { '@type': 'Organization', name: 'Vayence Inc', logo: { '@type': 'ImageObject', url: SITE_URL + 'assets/img/icon-512.png' } }
-      });
-      document.head.appendChild(ld);
-      ['og:image:width', 'og:image:height'].forEach(function (k) {
-        var m = document.head.querySelector('meta[property="' + k + '"]');
-        if (m) m.remove();
-      });
-      Array.prototype.slice.call(document.querySelectorAll('[data-releases-head]')).forEach(function (h) { h.hidden = true; });
-      single.hidden = false;
-      var others = POSTS.filter(function (p) { return p !== post; }).slice(0, 3);
-      view.innerHTML =
-        '<a class="post-view__back" href="releases.html#' + post.category.toLowerCase() + '">' + icon('arrow-left') + 'Back to ' + esc(post.category) + '</a>' +
-        '<header class="post-view__head">' +
-          '<p class="post-card__meta"><span class="tag">' + esc(post.category) + '</span><span>' + when(post) + '</span></p>' +
-          '<h1 class="post-view__title">' + esc(post.title) + '</h1>' +
-          '<p class="statement">' + esc(post.excerpt) + '</p>' +
-        '</header>' +
-        '<figure class="post-view__media">' + img(post) + '</figure>' +
-        '<div class="post-view__body">' +
-          post.body.map(function (para) { return '<p>' + esc(para) + '</p>'; }).join('') +
-          (post.quote ? '<figure class="quote"><blockquote class="quote__text">' + esc(post.quote.text) + '</blockquote>' +
-            '<figcaption class="small quote__cite">' + esc(post.quote.cite) + '</figcaption></figure>' : '') +
-        '</div>' +
-        (post.videos ? '<div class="post-videos">' + post.videos.map(function (v) {
-          return '<figure class="post-video"><div class="post-video__frame"><iframe src="' + v.embed + '&title=0&byline=0&portrait=0" title="' + esc(v.title) + '" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe></div>' +
-            '<figcaption><span>' + esc(v.title) + '</span><span class="muted">' + esc(v.duration || '') + '</span></figcaption></figure>';
-        }).join('') + '</div>' : '') +
-        ((post.source || post.links) ? '<ul class="post-sources">' +
-          (post.source ? '<li><a class="text-link" href="' + post.source.url + '" target="_blank" rel="noopener">' + esc(post.source.cta || ('Read on ' + post.source.name)) + '<img src="assets/icons/arrow-ink.svg" width="16" height="16" alt=""></a></li>' : '') +
-          (post.links || []).map(function (l) {
-            return '<li><a class="text-link" href="' + l.url + '" target="_blank" rel="noopener">' + esc(l.label) + '<img src="assets/icons/arrow-ink.svg" width="16" height="16" alt=""></a></li>';
-          }).join('') + '</ul>' : '') +
-        (others.length ? '<div class="post-view__more"><h2 class="h3">More releases</h2><div class="post-list">' + others.map(postRow).join('') + '</div></div>' : '');
-    } else if (lists.length && window.location.hash) {
-      // lists render after the browser's own jump to the anchor, so settle there again
-      var target = document.getElementById(window.location.hash.slice(1));
-      if (target) window.requestAnimationFrame(function () { target.scrollIntoView({ behavior: 'instant', block: 'start' }); });
-    }
-  }
+  // Lists and post pages are static (scripts/build-releases.js); send old releases.html?post=<slug> links there
+  var legacyPost = page === 'releases' && new URLSearchParams(window.location.search).get('post');
+  if (legacyPost && /^[a-z0-9-]+$/.test(legacyPost)) window.location.replace('releases/' + legacyPost + '.html');
 
   // ---------- Partners marquee: duplicate the set so the loop is seamless ----------
   Array.prototype.slice.call(document.querySelectorAll('.marquee__track')).forEach(function (track) {
