@@ -104,11 +104,22 @@ const postView = (post, others) =>
   ((post.source || post.links) ? '<ul class="post-sources">' +
     (post.source ? arrowLink(post.source.url, post.source.cta || ('Read on ' + post.source.name)) : '') +
     (post.links || []).map((l) => arrowLink(l.url, l.label)).join('') + '</ul>' : '') +
+  // every release links to the product it's about, with descriptive link text
+  '<p class="post-view__product"><a class="text-link" href="proactive.html">Learn about ProActive, the deep pressure vest for autism and sensory overload' +
+    '<img src="assets/icons/arrow-ink.svg" width="16" height="16" alt=""></a></p>' +
   (others.length ? '<div class="post-view__more"><h2 class="h3">More releases</h2><div class="post-list">' + others.map(postRow).join('') + '</div></div>' : '');
 
 // ---------- Structured data ----------
 const isoDuration = (d) => { const [m, s] = String(d).split(':').map(Number); return 'PT' + m + 'M' + s + 'S'; };
-const ORG = { '@type': 'Organization', '@id': SITE + '#org', name: 'Vayence Inc', url: SITE, logo: SITE + 'assets/img/icon-512.png' };
+const ORG = {
+  '@type': 'Organization', '@id': SITE + '#org', name: 'Vayence Inc', alternateName: 'Vayence', url: SITE, logo: SITE + 'assets/img/icon-512.png',
+  address: { '@type': 'PostalAddress', addressLocality: 'Toronto', addressRegion: 'ON', addressCountry: 'CA' }
+};
+const PRODUCT = {
+  '@type': 'Thing', name: 'ProActive', url: SITE + 'proactive.html',
+  description: 'A self-inflating deep pressure vest for autistic people and others with sensory sensitivities, in development by Vayence Inc in Toronto.'
+};
+const KEYWORDS = ['ProActive', 'Vayence Inc', 'Toronto', 'autism', 'sensory overload', 'deep pressure vest', 'assistive technology', 'medical technology'];
 
 function postLd(post) {
   const url = SITE + href(post);
@@ -121,6 +132,10 @@ function postLd(post) {
       image: [SITE + post.image],
       datePublished: post.date,
       articleSection: post.category,
+      inLanguage: 'en-CA',
+      about: PRODUCT,
+      keywords: [post.category].concat(KEYWORDS).join(', '),
+      isPartOf: { '@type': 'WebSite', '@id': SITE + '#website', name: 'Vayence Inc', url: SITE },
       mainEntityOfPage: url,
       author: ORG,
       publisher: ORG
@@ -154,7 +169,7 @@ function postLd(post) {
 function postPage(post, others) {
   const url = SITE + href(post);
   return `<!doctype html>
-<html lang="en">
+<html lang="en-CA">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">

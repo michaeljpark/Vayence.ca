@@ -116,7 +116,7 @@
       '</div>' +
       '<div class="footer__bottom small muted">' +
         '<p class="footer__disclaimer">ProActive is in development and is not available for sale. It is not intended to diagnose, treat, cure or prevent any medical condition.</p>' +
-        '<p>© 2026 Vayence Inc. All rights reserved.</p>' +
+        '<p>© 2026 Vayence Inc · Toronto, Ontario, Canada. All rights reserved.</p>' +
       '</div>';
   }
 
