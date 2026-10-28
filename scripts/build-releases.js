@@ -119,7 +119,7 @@ const PRODUCT = {
   '@type': 'Thing', name: 'ProActive', url: SITE + 'proactive.html',
   description: 'A self-inflating deep pressure vest for autistic people and others with sensory sensitivities, in development by Vayence Inc in Toronto.'
 };
-const KEYWORDS = ['ProActive', 'Vayence Inc', 'Toronto', 'autism', 'sensory overload', 'deep pressure vest', 'assistive technology', 'medical technology'];
+const KEYWORDS = ['ProActive', 'Vayence Inc', 'Toronto', 'autism', 'anxiety vest', 'sensory issues', 'sensory overload', 'deep pressure vest', 'wearable health', 'assistive technology', 'medical technology'];
 
 function postLd(post) {
   const url = SITE + href(post);

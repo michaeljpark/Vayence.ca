@@ -25,7 +25,8 @@
       items: [
         ['ProActive', 'Self-inflating vest for sensory regulation', 'proactive.html'],
         ['How ProActive works', 'Monitor, relief and tracking', 'proactive.html#how'],
-        ['Design', 'Four decisions behind the vest', 'proactive.html#design']
+        ['Design', 'Four decisions behind the vest', 'proactive.html#design'],
+        ['FAQ', 'Anxiety vests, sensory issues and deep pressure', 'proactive.html#faq']
       ]
     },
     {
